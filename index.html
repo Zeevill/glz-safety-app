@@ -39,7 +39,7 @@ main{padding:0 18px 18px}.stats{display:grid;grid-template-columns:repeat(6,1fr)
 <section class="card" id="employeePanel"><h2 id="formTitle"></h2><p id="formDesc"></p><div id="quickJhaHint" class="muted hidden" style="background:#f8fafc;border:1px solid #dbe3ec;border-radius:14px;padding:10px;margin-bottom:10px">Quick JHA: fill only the essentials, then collect crew signatures below.</div><div id="fields"></div><label id="photoLabel">Photo / Attachment Reference</label><input id="photoName" placeholder="Example: photo-001.jpg"><label>iPad Camera / Photo File</label><input id="photoFile" type="file" accept="image/*" capture="environment">
 <div class="signatureBox"><label>Draw Signature</label><input id="signatureName" placeholder="Signer name"><canvas id="signatureCanvas" class="sigCanvas"></canvas><div class="bar"><button class="secondary" onclick="clearSignaturePad()">Clear Signature Pad</button><button class="primary" onclick="addSignature()">Add Signature</button></div><div id="signatureList"></div></div>
 <div class="bar"><button class="primary" onclick="saveReport('Submitted')" id="submitBtn">Submit Report</button><button class="secondary" onclick="saveReport('Draft')" id="draftBtn">Save Draft</button><button class="secondary" onclick="clearForm()" id="clearBtn">Clear</button></div><p class="muted" id="saveStatus"></p></section>
-<section class="card hidden" id="adminPanel"><h2 id="adminTitle">Admin Dashboard</h2><p id="adminDesc">Review, close, delete, and export records.</p><label>Search</label><input id="search" placeholder="Search..." oninput="renderReports()"><div class="bar"><button class="secondary" onclick="exportCSV()">CSV</button><button class="secondary" onclick="exportJSON()">Backup JSON</button><button class="secondary" onclick="downloadReport(false)">Report File</button><button class="secondary" onclick="downloadReport(true)">JHA File</button><button class="danger" onclick="hideAllVisibleReports()">Hide All Visible Reports</button></div><h3>Audit Log</h3><div id="auditBox"></div></section>
+<section class="card hidden" id="adminPanel"><h2 id="adminTitle">Admin Dashboard</h2><p id="adminDesc">Review, close, delete, and export records.</p><label>Search</label><input id="search" placeholder="Search..." oninput="renderReports()"><div class="bar"><button class="secondary" onclick="exportCSV()">CSV</button><button class="secondary" onclick="exportJSON()">Backup JSON</button><button class="primary" onclick="exportPDF(false)">Export PDF</button><button class="secondary" onclick="exportPDF(true)">Export JHA PDF</button><button class="danger" onclick="hideAllVisibleReports()">Hide All Visible Reports</button></div><h3>Audit Log</h3><div id="auditBox"></div></section>
 <aside class="card"><h2 id="dashTitle">Supervisor Dashboard</h2><input id="sideSearch" placeholder="Search reports..." oninput="syncSearch()"><div id="reports" style="margin-top:14px"></div></aside></section>
 </main><footer><main><div class="card muted">GLZSHEETMETAL LLC branded internal safety documentation. This tool supports documentation and OSHA-aligned records but does not replace legal advice, required filings, or competent-person duties.</div></main></footer>
 <script>
@@ -101,7 +101,98 @@ function values(){const v={};document.querySelectorAll("[data-field]").forEach(e
 function reportKey(r){return r.clientId||r.localId||r.id||r.firebaseId}function dedupeReports(list){const seen=new Set();return(list||[]).filter(r=>{const k=reportKey(r);if(!k)return true;if(seen.has(k))return false;seen.add(k);return true})}
 function saveReport(status){if(!currentUser){alert("Login first.");return}const f=activeForm(),rid=id(),file=document.getElementById("photoFile");const report={id:rid,clientId:rid,localId:rid,company:"GLZSHEETMETAL LLC",language:lang,formId:f.id,formTitle:f[lang].title,status,user:currentUser.email,offline:offlineMode,role:userRole,jobsite:(document.getElementById("defaultJobsite").value.trim()||Object.entries(values()).find(([k])=>isJobsiteField(k))?.[1]||""),values:values(),photoName:document.getElementById("photoName").value.trim()||(file&&file.files[0]?file.files[0].name:""),createdAt:new Date().toISOString(),signatures:[...currentSignatures],cloudSyncStatus:"Pending cloud sync"};state.reports=dedupeReports([report,...state.reports]);state.audit.unshift({id:id(),action:status+" report created",reportId:rid,user:currentUser.email,offline:offlineMode,createdAt:new Date().toISOString()});persist();clearForm(false);document.getElementById("saveStatus").textContent=status+" saved.";render();syncOne(report)}
 function closeReport(rid){if(!isAdmin())return alert("Only supervisors can close reports.");state.reports=state.reports.map(r=>r.id===rid?{...r,status:"Closed",cloudSyncStatus:"Pending cloud sync",reviewedAt:new Date().toISOString(),reviewedBy:currentUser.email}:r);persist();render();manualSync()}function deleteReport(rid){if(!isAdmin())return alert("Only supervisors can delete reports.");if(!confirm("Delete this report?"))return;state.reports=state.reports.filter(r=>r.id!==rid);persist();render()}function hideAllVisibleReports(){const visible=visibleReports();if(!visible.length)return alert("No visible reports to hide.");if(!confirm("Hide all "+visible.length+" visible reports on this device?"))return;visible.forEach(r=>hideReportGlobally(r));persist();render();alert("Visible reports hidden on this device.")}async function forceRemoveReport(reportId){const report=(state.reports||[]).find(r=>[r.id,r.localId,r.clientId,r.firebaseId].filter(Boolean).includes(reportId));if(!report)return alert("Report not found locally.");if(!confirm("Force remove this report?"))return;hideReportGlobally(report);state.reports=state.reports.filter(r=>![r.id,r.localId,r.clientId,r.firebaseId].filter(Boolean).some(x=>[report.id,report.localId,report.clientId,report.firebaseId].filter(Boolean).includes(x)));if(db&&currentUser&&report.firebaseId){try{await db.collection("reports").doc(report.firebaseId).delete()}catch(e){console.error(e)}}persist();render()}
-function compact(r){return{id:r.id,form:r.formTitle,status:r.status,user:r.user,role:r.role,jobsite:r.jobsite,createdAt:r.createdAt,sync:r.cloudSyncStatus,photo:r.photoName,values:r.values||{},signatures:r.signatures||[]}}function download(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}function exportJSON(){download("GLZSHEETMETAL-LLC-backup.json",JSON.stringify({reports:visibleReports().map(compact),audit:state.audit}),"application/json")}function exportCSV(){const rows=[["ID","Form","Status","User","Role","Jobsite","Created","Summary","Signatures"]];visibleReports().forEach(r=>{const c=compact(r);rows.push([c.id,c.form,c.status,c.user,c.role,c.jobsite,c.createdAt,Object.values(c.values).slice(0,3).join(" | "),(c.signatures||[]).length])});download("GLZSHEETMETAL-LLC-reports.csv",rows.map(row=>row.map(v=>'"'+String(v||"").replaceAll('"','""')+'"').join(",")).join("\\n"),"text/csv")}function downloadReport(jhaOnly){let list=jhaOnly?visibleReports().filter(r=>r.formId==="jha"):visibleReports();let h="<html><head><title>GLZ Report</title><style>body{font-family:Arial;font-size:12px;padding:20px}h1{font-size:20px}h2{font-size:15px;border-bottom:1px solid #ccc}img.sig{max-width:260px;height:70px;border:1px solid #ccc}</style></head><body><h1>GLZSHEETMETAL LLC - "+(jhaOnly?"JHA":"Safety")+" Report</h1>";list.forEach(r=>{h+="<h2>"+r.formTitle+"</h2><p><b>ID:</b> "+r.id+" <b>Status:</b> "+r.status+" <b>User:</b> "+r.user+"</p>";Object.entries(r.values||{}).forEach(([k,v])=>{if(v)h+="<p><b>"+k+":</b> "+v+"</p>"});(r.signatures||[]).forEach(s=>{h+="<p><b>Signature:</b> "+(s.name||"")+" - "+new Date(s.date).toLocaleString()+"</p><img class='sig' src='"+s.image+"'>"})});h+="</body></html>";download(jhaOnly?"GLZ-JHA-report.html":"GLZ-safety-report.html",h,"text/html")}
+function compact(r){return{id:r.id,form:r.formTitle,status:r.status,user:r.user,role:r.role,jobsite:r.jobsite,createdAt:r.createdAt,sync:r.cloudSyncStatus,photo:r.photoName,values:r.values||{},signatures:r.signatures||[]}}function download(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}function exportJSON(){download("GLZSHEETMETAL-LLC-backup.json",JSON.stringify({reports:visibleReports().map(compact),audit:state.audit}),"application/json")}function exportCSV(){const rows=[["ID","Form","Status","User","Role","Jobsite","Created","Summary","Signatures"]];visibleReports().forEach(r=>{const c=compact(r);rows.push([c.id,c.form,c.status,c.user,c.role,c.jobsite,c.createdAt,Object.values(c.values).slice(0,3).join(" | "),(c.signatures||[]).length])});download("GLZSHEETMETAL-LLC-reports.csv",rows.map(row=>row.map(v=>'"'+String(v||"").replaceAll('"','""')+'"').join(",")).join("\\n"),"text/csv")}function exportPDF(jhaOnly){
+ let list=jhaOnly?visibleReports().filter(r=>r.formId==="jha"):visibleReports();
+ let title=jhaOnly?"JHA Report":"Safety Report";
+
+ let html=`<!doctype html>
+ <html>
+ <head>
+ <meta charset="utf-8">
+ <title>GLZSHEETMETAL LLC - ${title}</title>
+ <style>
+ @page{margin:12mm}
+ body{font-family:Arial,sans-serif;font-size:11px;color:#111;margin:0}
+ .brandHeader{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #0f172a;padding-bottom:8px;margin-bottom:10px}
+ .brandLeft{display:flex;align-items:center;gap:10px}
+ .logo{width:52px;height:52px;border-radius:12px;background:#0f172a;color:white;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px}
+ h1{font-size:18px;margin:0;color:#0f172a}
+ .subtitle{font-size:10px;color:#64748b;margin-top:2px}
+ .meta{font-size:9px;color:#64748b;text-align:right}
+ .report{page-break-inside:avoid;border:1px solid #dbe3ec;border-radius:8px;margin:9px 0;padding:8px}
+ h2{font-size:13px;margin:0 0 6px;background:#f1f5f9;border:1px solid #dbe3ec;padding:6px;border-radius:6px}
+ .grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 10px}
+ .row{border-bottom:1px solid #eee;padding:3px 0}
+ .label{font-weight:bold;color:#0f172a}
+ img.sig{max-width:220px;height:58px;border:1px solid #ccc;background:white}
+ .footer{font-size:8px;color:#64748b;border-top:1px solid #dbe3ec;margin-top:10px;padding-top:5px}
+ .empty{color:#64748b}
+ </style>
+ </head>
+ <body>
+ <div class="brandHeader">
+   <div class="brandLeft">
+     <div class="logo">GLZ</div>
+     <div>
+       <h1>GLZSHEETMETAL LLC</h1>
+       <div class="subtitle">Mobile Safety Workflow • ${title}</div>
+     </div>
+   </div>
+   <div class="meta">
+     Generated<br>${new Date().toLocaleString()}<br>Compact PDF Export
+   </div>
+ </div>`;
+
+ if(!list.length){
+   html+=`<p class="empty">No reports available.</p>`;
+ }
+
+ list.forEach((r,i)=>{
+   const vals=Object.entries(r.values||{}).filter(([k,v])=>String(v||"").trim());
+
+   html+=`<section class="report">
+   <h2>${i+1}. ${r.formTitle||"Report"}</h2>
+   <div class="grid">
+     <div class="row"><span class="label">ID:</span> ${r.id||""}</div>
+     <div class="row"><span class="label">Status:</span> ${r.status||""}</div>
+     <div class="row"><span class="label">User:</span> ${r.user||""}</div>
+     <div class="row"><span class="label">Role:</span> ${r.role||""}</div>
+     <div class="row"><span class="label">Jobsite:</span> ${r.jobsite||""}</div>
+     <div class="row"><span class="label">Created:</span> ${new Date(r.createdAt).toLocaleString()}</div>
+   </div>`;
+
+   if(vals.length){
+     html+=`<div class="grid" style="margin-top:6px">`;
+     vals.forEach(([k,v])=>{
+       html+=`<div class="row"><span class="label">${k}:</span> ${v}</div>`;
+     });
+     html+=`</div>`;
+   }
+
+   if((r.signatures||[]).length){
+     html+=`<div style="margin-top:7px"><span class="label">Signatures</span>`;
+     (r.signatures||[]).forEach(s=>{
+       html+=`<div class="row"><b>${s.name||""}</b> ${new Date(s.date).toLocaleString()}<br><img class="sig" src="${s.image}"></div>`;
+     });
+     html+=`</div>`;
+   }
+
+   html+=`</section>`;
+ });
+
+ html+=`<div class="footer">GLZSHEETMETAL LLC | Internal Safety Documentation | Export includes filled fields only.</div></body></html>`;
+
+ let win=window.open("","_blank");
+ if(win){
+   win.document.open();
+   win.document.write(html);
+   win.document.close();
+   setTimeout(()=>{win.focus();win.print();},500);
+ }else{
+   download(jhaOnly?"GLZSHEETMETAL-LLC-JHA-PDF.html":"GLZSHEETMETAL-LLC-Safety-PDF.html",html,"text/html");
+   alert("Popup blocked. A branded printable PDF file was downloaded instead. Open it and choose Print > Save as PDF.");
+ }
+}
 function offlineLogin(){const name=prompt("No signal? Enter employee name for Offline Mode:");if(!name)return;const role=prompt("Enter role: Employee, Foreman, or Safety Manager","Employee")||"Employee";offlineMode=true;currentUser={email:"offline:"+name.trim().toLowerCase().replace(/\\s+/g,"."),offlineName:name.trim()};userRole=(role==="Foreman"||role==="Safety Manager")?role:"Employee";document.getElementById("loginOverlay").style.display="none";document.getElementById("userStatus").textContent="Offline: "+name.trim();setStatus("Offline Mode • Saved on iPad");render()}function switchToOnlineLogin(){offlineMode=false;currentUser=null;userRole="Employee";document.getElementById("loginOverlay").style.display="flex";document.getElementById("userStatus").textContent="Not signed in";setStatus("Login required");render()}
 async function loadFirebase(){setStatus("Loading Firebase...");await loadScript("https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js");await loadScript("https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js");await loadScript("https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js");firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.firestore();firebaseReady=true;setStatus("Login required");await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);auth.onAuthStateChanged(async user=>{if(offlineMode)return;currentUser=user;if(user){document.getElementById("loginOverlay").style.display="none";document.getElementById("userStatus").textContent="Signed in: "+user.email;await loadRole();await loadCloud();manualSync()}else{document.getElementById("loginOverlay").style.display="flex";document.getElementById("userStatus").textContent="Not signed in";userRole="Employee";render()}})}function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=()=>rej(new Error("Failed "+src));document.head.appendChild(s)})}async function login(){const e=document.getElementById("loginEmail").value.trim().toLowerCase(),p=document.getElementById("loginPassword").value,err=document.getElementById("loginError");err.style.display="none";if(!auth){err.textContent="Login system loading or no signal. Use Offline Mode if needed.";err.style.display="block";return}if(!e||!p){err.textContent="Enter email and password, or use Offline Mode.";err.style.display="block";return}try{await auth.signInWithEmailAndPassword(e,p);document.getElementById("loginPassword").value=""}catch(ex){err.textContent="Login failed: "+(ex.code||"try again");err.style.display="block";document.getElementById("loginPassword").value="";document.getElementById("loginPassword").focus()}}function togglePassword(){const p=document.getElementById("loginPassword");p.type=p.type==="password"?"text":"password"}function logout(){offlineMode=false;currentUser=null;userRole="Employee";if(auth)auth.signOut();else document.getElementById("loginOverlay").style.display="flex";render()}
 async function loadRole(){try{const email=currentUser.email.toLowerCase();const doc=await db.collection("users").doc(email).get();if(doc.exists)userRole=doc.data().role||"Employee";else{userRole="Employee";await db.collection("users").doc(email).set({email,role:"Employee",createdAt:new Date().toISOString()},{merge:true})}}catch(e){console.error(e);userRole="Employee"}render()}async function loadCloud(){if(!db||!currentUser||!online())return;try{const snap=await db.collection("reports").orderBy("createdAt","desc").get();const cloud=snap.docs.map(d=>({firebaseId:d.id,cloudSyncStatus:"Synced",...d.data()}));const cloudKeys=new Set();cloud.forEach(r=>{if(r.clientId)cloudKeys.add(r.clientId);if(r.localId)cloudKeys.add(r.localId);if(r.id)cloudKeys.add(r.id);if(r.firebaseId)cloudKeys.add(r.firebaseId)});const pending=state.reports.filter(r=>r.cloudSyncStatus!=="Synced"&&!cloudKeys.has(reportKey(r)));state.reports=dedupeReports([...pending,...cloud]);persist();render()}catch(e){console.error(e);setStatus("Cloud blocked or rules error")}}async function syncOne(r){if(offlineMode||!db||!currentUser||!online())return updateSyncStatus();if(r.cloudSyncStatus==="Synced"||r.firebaseId)return updateSyncStatus();try{const key=reportKey(r);const clean={...r,clientId:r.clientId||key,localId:r.localId||key,cloudSyncStatus:"Synced",lastSyncedAt:new Date().toISOString()};delete clean.firebaseId;const ref=await db.collection("reports").add(clean);state.reports=state.reports.map(x=>reportKey(x)===key?{...x,cloudSyncStatus:"Synced",firebaseId:ref.id,lastSyncedAt:new Date().toISOString()}:x);state.reports=dedupeReports(state.reports);persist();render()}catch(e){console.error(e);updateSyncStatus()}}async function manualSync(){if(syncing)return;if(offlineMode){alert("Offline reports are saved on this iPad. To sync, reconnect, tap Online Login, then sign in.");return updateSyncStatus()}if(!currentUser)return updateSyncStatus();if(!online())return updateSyncStatus();syncing=true;const pending=state.reports.filter(r=>r.cloudSyncStatus!=="Synced"&&!r.firebaseId);setStatus("Syncing "+pending.length+"...");for(const r of pending)await syncOne(r);syncing=false;await loadCloud();updateSyncStatus()}
