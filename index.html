@@ -52,9 +52,9 @@ main{padding:0 18px 18px}.stats{display:grid;grid-template-columns:repeat(6,1fr)
 <section class="stats"><div class="stat"><span class="muted" id="sTotal">Total</span><b id="total">0</b></div><div class="stat"><span class="muted" id="sSubmitted">Submitted</span><b id="submitted">0</b></div><div class="stat"><span class="muted" id="sDraft">Drafts</span><b id="drafts">0</b></div><div class="stat"><span class="muted" id="sClosed">Closed</span><b id="closed">0</b></div><div class="stat"><span class="muted">JHAs</span><b id="jhas">0</b></div><div class="stat"><span class="muted">Pending Sync</span><b id="pending">0</b></div></section>
 <section class="grid"><aside class="card"><button id="empTab" class="tab active" onclick="setPanel('employee')">Employee App</button><button id="adminTab" class="tab" onclick="setPanel('admin')">Admin Dashboard</button><h2 id="formsTitle">Forms</h2><div class="forms" id="formButtons"></div><label id="roleLabel">Role</label><input id="roleBox" disabled value="Employee"><p class="muted" id="roleNote">Role loads from Firestore users/{email}.role.</p><p class="muted" id="roleDebugNote">Edit buttons appear only when role is Foreman or Safety Manager.</p><label id="jobsiteLabel">Default Jobsite</label><select id="jobsiteSelect" onchange="selectJobsite()"></select><div class="bar"><input id="newJobsite" placeholder="Add new jobsite"><button class="secondary" onclick="addJobsite()">Add</button><button class="danger" onclick="removeSelectedJobsite()">Remove</button></div><input id="defaultJobsite" placeholder="Selected jobsite" readonly></aside>
 <section class="card" id="employeePanel"><h2 id="formTitle"></h2><p id="formDesc"></p><div id="quickJhaHint" class="muted hidden" style="background:#f8fafc;border:1px solid #dbe3ec;border-radius:14px;padding:10px;margin-bottom:10px">Quick JHA: fill only the essentials, then collect crew signatures below.<br><b>Required for JSA/JHA:</b> Jobsite, crew/workers, task, hazards, controls, PPE, and signature.</div><div id="fields"></div>
-<div id="jsaRequiredSection" class="jsaRequiredBox hidden">
+<div id="jsaRequiredSection" class="jsaRequiredBox">
   <h3>JSA Required Info / Información Requerida</h3>
-  <p class="muted">This section is required for every JSA/JHA.</p>
+  <p class="muted">Complete this section for every Quick Job Safety Analysis.</p>
   <div class="jsaReqGrid">
     <div class="full">
       <label>Jobsite / Proyecto <span style="color:#991b1b">*</span></label>
@@ -87,7 +87,8 @@ main{padding:0 18px 18px}.stats{display:grid;grid-template-columns:repeat(6,1fr)
       <textarea id="jsaControls" placeholder="How hazards will be controlled / Cómo se controlan los peligros"></textarea>
     </div>
   </div>
-</div><label id="photoLabel">Photo / Attachment Reference</label><input id="photoName" placeholder="Example: photo-001.jpg"><label>iPad Camera / Photo File</label><input id="photoFile" type="file" accept="image/*" capture="environment">
+</div>
+<label id="photoLabel">Photo / Attachment Reference</label><input id="photoName" placeholder="Example: photo-001.jpg"><label>iPad Camera / Photo File</label><input id="photoFile" type="file" accept="image/*" capture="environment">
 <div class="ppeBox">
 <label>Required / Used PPE / EPP Requerido o Usado</label>
 <div id="ppeChecklist" class="ppeGrid"></div>
