@@ -118,34 +118,31 @@ function clearPPE(){
  if(other)other.value="";
 }
 
-function isJobsiteField(field){return /jobsite|job site|project|proyecto|sitio|ubicación/i.test(field)}
 
+function isJobsiteField(field){return /jobsite|job site|project|proyecto|sitio|ubicación/i.test(field)}
 function isCrewField(field){return /crew|workers|employees present|cuadrilla|trabajadores|empleados/i.test(field)}
 function isTaskField(field){return /task|work being done|tarea|trabajo/i.test(field)}
 function isHazardField(field){return /hazard|peligro/i.test(field)}
 function isControlField(field){return /control|preven/i.test(field)}
-
 function renderWorkerOptions(selectedText=""){
  const selected=selectedText.split(",").map(x=>x.trim()).filter(Boolean);
  return (state.workers||[]).map(w=>{
-   const label=(w.name||w).trim();
+   const label=String(w.name||w||"").trim();
+   if(!label)return "";
    const val=escapeHTML(label);
    const sel=selected.some(s=>s.toLowerCase()===label.toLowerCase())?"selected":"";
    return `<option value="${val}" ${sel}>${val}</option>`;
  }).join("");
 }
-
 function selectedCrewText(){
  const sel=document.getElementById("crewSelect");
  if(!sel)return "";
  return [...sel.selectedOptions].map(o=>o.value).filter(Boolean).join(", ");
 }
-
 function syncCrewField(){
  const target=document.querySelector("[data-crew-field='yes']");
  if(target)target.value=selectedCrewText();
 }
-
 function addWorker(){
  const name=(document.getElementById("newWorkerName")?.value||"").trim();
  const role=(document.getElementById("newWorkerRole")?.value||"").trim();
@@ -163,7 +160,6 @@ function addWorker(){
  const sel=document.getElementById("crewSelect");
  if(sel){[...sel.options].forEach(o=>{if(o.value===label)o.selected=true});syncCrewField();}
 }
-
 function removeSelectedWorkers(){
  const sel=document.getElementById("crewSelect");
  if(!sel)return alert("Open the JSA/JHA form first.");
@@ -559,7 +555,8 @@ function exportCSV(){const rows=[["ID","Form","Status","User","Role","Jobsite","
    html+=`</section>`;
  });
 
- html+=`<div class="footer">GLZSHEETMETAL LLC | Internal Safety Documentation | Export includes filled fields only.</div></body></html>`;
+ html+=`<div class="footer">GLZSHEETMETAL LLC | Internal Safety Documentation | Export includes filled fields only.</div><!-- JSA_FIELDS_ENABLED_VERIFIED -->
+</body></html>`;
 
  let win=window.open("","_blank");
  if(win){
@@ -611,4 +608,5 @@ function bindLoginButtons(){
 
 document.getElementById("reportModal").addEventListener("click",e=>{if(e.target===document.getElementById("reportModal"))closeSubmissionDetail()});
 window.addEventListener("online",manualSync);window.addEventListener("offline",updateSyncStatus);document.addEventListener("keydown",e=>{if(e.key==="Enter"&&document.getElementById("loginOverlay").style.display!=="none")login();if(e.key==="Escape"&&document.getElementById("reportModal").style.display==="flex")closeSubmissionDetail()});bindLoginButtons();render();setStatus("Loading Firebase...");setFirebaseStatus("Loading login system...");loadFirebase().catch(e=>{console.error(e);setStatus("Firebase failed to load");document.getElementById("loginError").textContent="Firebase failed to load. Use Offline Mode if needed.";document.getElementById("loginError").style.display="block";setFirebaseStatus("Firebase failed to load. Offline Mode still works.")});
-</script></body></html>
+</script><!-- JSA_FIELDS_ENABLED_VERIFIED -->
+</body></html>
