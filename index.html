@@ -74,7 +74,7 @@ main{padding:0 18px 18px}.stats{display:grid;grid-template-columns:repeat(6,1fr)
       <label>Crew / Workers / Cuadrilla</label>
       <select id="glzJsaCrewSelect" multiple size="6"></select>
       <textarea id="glzJsaCrewText" placeholder="Selected workers appear here, or type workers manually."></textarea>
-      <div class="crewHelp">Changing jobsites clears the current crew unless that jobsite has saved crew.</div>
+      <div class="crewHelp">Crew can be saved and reused by jobsite.</div>
       <div class="bar">
         <input id="glzJsaNewWorker" placeholder="Worker name / Nombre">
         <input id="glzJsaNewWorkerRole" placeholder="Role/trade optional / Oficio opcional">
@@ -1564,8 +1564,12 @@ setTimeout(glzBindAdminTabs,1000);
 
 
 
-/* GLZ_SINGLE_CLEAN_JSA_CREW_FIX_START */
-function glzIsQuickJsaSelectedClean(){
+
+
+
+
+/* GLZ_ONE_JSA_FIELD_SET_START */
+function glzIsQuickJsaSelected(){
   try{
     if(typeof activeFormId!=="undefined" && activeFormId==="jha")return true;
     const title=document.getElementById("formTitle");
@@ -1574,18 +1578,18 @@ function glzIsQuickJsaSelectedClean(){
   return false;
 }
 
-function glzWorkerLabelClean(w){
+function glzWorkerLabel(w){
   return String((w && w.name) ? w.name : (w || "")).trim();
 }
 
-function glzGetCrewTextListClean(){
+function glzCrewList(){
   const txt=(document.getElementById("glzJsaCrewText")?.value||"").trim();
   if(txt)return txt.split(",").map(x=>x.trim()).filter(Boolean);
   const sel=document.getElementById("glzJsaCrewSelect");
   return sel ? [...sel.selectedOptions].map(o=>o.value).filter(Boolean) : [];
 }
 
-function glzSetCrewClean(list){
+function glzSetCrew(list){
   const names=(list||[]).map(x=>String(x||"").trim()).filter(Boolean);
   const txt=document.getElementById("glzJsaCrewText");
   if(txt)txt.value=names.join(", ");
@@ -1597,76 +1601,56 @@ function glzSetCrewClean(list){
   }
 }
 
-function glzCurrentJsaJobsiteClean(){
+function glzCurrentJobsite(){
   return (document.getElementById("glzJsaJobsite")?.value||document.getElementById("defaultJobsite")?.value||"").trim();
 }
 
-function glzRefreshCrewOptionsClean(){
-  const crew=document.getElementById("glzJsaCrewSelect");
-  if(!crew)return;
-  const selected=glzGetCrewTextListClean();
-  crew.innerHTML=(state.workers||[]).map(function(w){
-    const name=glzWorkerLabelClean(w);
-    if(!name)return "";
-    const sel=selected.some(s=>s.toLowerCase()===name.toLowerCase())?"selected":"";
-    return '<option value="'+escapeHTML(name)+'" '+sel+'>'+escapeHTML(name)+'</option>';
-  }).join("");
-}
-
-function glzLoadCrewForJobsiteClean(){
-  const job=glzCurrentJsaJobsiteClean();
-  state.crewByJobsite=state.crewByJobsite||{};
-  const saved=job ? (state.crewByJobsite[job]||[]) : [];
-  // Important: clear old crew when switching jobsites if this jobsite has no saved crew.
-  glzSetCrewClean(saved);
-}
-
-function glzSaveCrewForCurrentJobsiteClean(){
-  const job=glzCurrentJsaJobsiteClean();
+function glzSaveCrewForJobsite(){
+  const job=glzCurrentJobsite();
   if(!job)return;
-  const crew=glzGetCrewTextListClean();
   state.crewByJobsite=state.crewByJobsite||{};
-  state.crewByJobsite[job]=[...new Set(crew)].sort((a,b)=>a.localeCompare(b));
+  state.crewByJobsite[job]=[...new Set(glzCrewList())].sort((a,b)=>a.localeCompare(b));
   persist();
 }
 
-function glzRenderStandaloneJsaClean(){
+function glzLoadCrewForJobsite(){
+  const job=glzCurrentJobsite();
+  state.crewByJobsite=state.crewByJobsite||{};
+  glzSetCrew(job ? (state.crewByJobsite[job]||[]) : []);
+}
+
+function glzRenderJsaSection(){
   const box=document.getElementById("glzStandaloneJsa");
   if(!box)return;
-  const show=glzIsQuickJsaSelectedClean();
+  const show=glzIsQuickJsaSelected();
   box.style.display=show?"block":"none";
   if(!show)return;
 
   const job=document.getElementById("glzJsaJobsite");
   if(job){
     const current=job.value || (document.getElementById("defaultJobsite")?.value||"");
-    job.innerHTML='<option value="">Select jobsite / Seleccione proyecto</option>'+(state.jobsites||[]).map(function(j){
-      return '<option value="'+escapeHTML(j)+'">'+escapeHTML(j)+'</option>';
-    }).join("");
+    job.innerHTML='<option value="">Select jobsite / Seleccione proyecto</option>'+(state.jobsites||[]).map(j=>'<option value="'+escapeHTML(j)+'">'+escapeHTML(j)+'</option>').join("");
     job.value=current;
     job.onchange=function(){
       const def=document.getElementById("defaultJobsite");
       if(def)def.value=this.value;
-      glzRefreshCrewOptionsClean();
-      glzLoadCrewForJobsiteClean();
+      glzLoadCrewForJobsite();
     };
   }
-
-  glzRefreshCrewOptionsClean();
 
   const crew=document.getElementById("glzJsaCrewSelect");
   if(crew){
+    const selected=glzCrewList();
+    crew.innerHTML=(state.workers||[]).map(w=>{
+      const name=glzWorkerLabel(w);
+      if(!name)return "";
+      const sel=selected.some(s=>s.toLowerCase()===name.toLowerCase())?"selected":"";
+      return '<option value="'+escapeHTML(name)+'" '+sel+'>'+escapeHTML(name)+'</option>';
+    }).join("");
     crew.onchange=function(){
-      glzSetCrewClean([...crew.selectedOptions].map(o=>o.value));
-      glzSaveCrewForCurrentJobsiteClean();
+      glzSetCrew([...crew.selectedOptions].map(o=>o.value));
+      glzSaveCrewForJobsite();
     };
-  }
-
-  const txt=document.getElementById("glzJsaCrewText");
-  if(txt && !txt.dataset.cleanBound){
-    txt.dataset.cleanBound="1";
-    txt.addEventListener("change",glzSaveCrewForCurrentJobsiteClean);
-    txt.addEventListener("blur",glzSaveCrewForCurrentJobsiteClean);
   }
 
   const addJob=document.getElementById("glzJsaAddJobsite");
@@ -1681,8 +1665,8 @@ function glzRenderStandaloneJsaClean(){
       state.jobsites.sort((a,b)=>a.localeCompare(b));
       persist();
       input.value="";
-      glzRenderStandaloneJsaClean();
-      const sel=document.getElementById("glzJsaJobsite"); 
+      glzRenderJsaSection();
+      const sel=document.getElementById("glzJsaJobsite");
       if(sel){sel.value=val; sel.onchange();}
       return false;
     };
@@ -1697,34 +1681,34 @@ function glzRenderStandaloneJsaClean(){
       if(!name)return alert("Enter worker name.");
       const label=role ? name+" - "+role : name;
       state.workers=state.workers||[];
-      if(!state.workers.some(w=>glzWorkerLabelClean(w).toLowerCase()===label.toLowerCase())){
+      if(!state.workers.some(w=>glzWorkerLabel(w).toLowerCase()===label.toLowerCase())){
         state.workers.push({name:label,createdAt:new Date().toISOString()});
-        state.workers.sort((a,b)=>glzWorkerLabelClean(a).localeCompare(glzWorkerLabelClean(b)));
+        state.workers.sort((a,b)=>glzWorkerLabel(a).localeCompare(glzWorkerLabel(b)));
       }
       persist();
       document.getElementById("glzJsaNewWorker").value="";
       const rb=document.getElementById("glzJsaNewWorkerRole"); if(rb)rb.value="";
-      glzRefreshCrewOptionsClean();
-      const existing=glzGetCrewTextListClean();
-      if(!existing.some(x=>x.toLowerCase()===label.toLowerCase()))existing.push(label);
-      glzSetCrewClean(existing);
-      glzSaveCrewForCurrentJobsiteClean();
+      const current=glzCrewList();
+      if(!current.some(x=>x.toLowerCase()===label.toLowerCase()))current.push(label);
+      glzRenderJsaSection();
+      glzSetCrew(current);
+      glzSaveCrewForJobsite();
       return false;
     };
   }
 
-  const removeFromJob=document.getElementById("glzJsaRemoveFromJobsite");
-  if(removeFromJob){
-    removeFromJob.onclick=function(e){
+  const removeJob=document.getElementById("glzJsaRemoveFromJobsite");
+  if(removeJob){
+    removeJob.onclick=function(e){
       if(e)e.preventDefault();
       const selected=[...document.getElementById("glzJsaCrewSelect").selectedOptions].map(o=>o.value);
       if(!selected.length)return alert("Select crew member(s) first.");
-      const job=glzCurrentJsaJobsiteClean();
+      const job=glzCurrentJobsite();
       if(!job)return alert("Select a jobsite first.");
       state.crewByJobsite=state.crewByJobsite||{};
       state.crewByJobsite[job]=(state.crewByJobsite[job]||[]).filter(name=>!selected.includes(name));
       persist();
-      glzLoadCrewForJobsiteClean();
+      glzLoadCrewForJobsite();
       return false;
     };
   }
@@ -1735,22 +1719,29 @@ function glzRenderStandaloneJsaClean(){
       if(e)e.preventDefault();
       const selected=[...document.getElementById("glzJsaCrewSelect").selectedOptions].map(o=>o.value);
       if(!selected.length)return alert("Select crew member(s) first.");
-      if(!confirm("Delete selected worker(s) permanently from saved crew list?"))return false;
-      state.workers=(state.workers||[]).filter(w=>!selected.includes(glzWorkerLabelClean(w)));
+      if(!confirm("Delete selected worker(s) permanently?"))return false;
+      state.workers=(state.workers||[]).filter(w=>!selected.includes(glzWorkerLabel(w)));
       state.crewByJobsite=state.crewByJobsite||{};
       Object.keys(state.crewByJobsite).forEach(job=>{
         state.crewByJobsite[job]=(state.crewByJobsite[job]||[]).filter(name=>!selected.includes(name));
       });
       persist();
-      glzSetCrewClean([]);
-      glzRefreshCrewOptionsClean();
+      glzSetCrew([]);
+      glzRenderJsaSection();
       return false;
     };
+  }
+
+  const txt=document.getElementById("glzJsaCrewText");
+  if(txt && !txt.dataset.glzCrewBound){
+    txt.dataset.glzCrewBound="1";
+    txt.addEventListener("change",glzSaveCrewForJobsite);
+    txt.addEventListener("blur",glzSaveCrewForJobsite);
   }
 }
 
 function jsaStaticValues(){
-  if(!glzIsQuickJsaSelectedClean())return {};
+  if(!glzIsQuickJsaSelected())return {};
   return {
     "Project / Jobsite":(document.getElementById("glzJsaJobsite")?.value||"").trim(),
     "Crew / Workers":(document.getElementById("glzJsaCrewText")?.value||"").trim(),
@@ -1761,16 +1752,16 @@ function jsaStaticValues(){
 }
 
 function saveJsaWorkersFromStatic(){
-  const crew=glzGetCrewTextListClean();
+  const crew=glzCrewList();
   if(!crew.length)return;
   state.workers=state.workers||[];
-  crew.forEach(function(name){
-    if(!state.workers.some(w=>glzWorkerLabelClean(w).toLowerCase()===name.toLowerCase())){
-      state.workers.push({name:name,createdAt:new Date().toISOString()});
+  crew.forEach(name=>{
+    if(!state.workers.some(w=>glzWorkerLabel(w).toLowerCase()===name.toLowerCase())){
+      state.workers.push({name,createdAt:new Date().toISOString()});
     }
   });
-  state.workers.sort((a,b)=>glzWorkerLabelClean(a).localeCompare(glzWorkerLabelClean(b)));
-  glzSaveCrewForCurrentJobsiteClean();
+  state.workers.sort((a,b)=>glzWorkerLabel(a).localeCompare(glzWorkerLabel(b)));
+  glzSaveCrewForJobsite();
   persist();
 }
 
@@ -1780,10 +1771,18 @@ function clearJsaStatic(){
   const crew=document.getElementById("glzJsaCrewSelect"); if(crew)[...crew.options].forEach(o=>o.selected=false);
 }
 
-document.addEventListener("DOMContentLoaded",glzRenderStandaloneJsaClean);
-setTimeout(glzRenderStandaloneJsaClean,200);
-setTimeout(glzRenderStandaloneJsaClean,1000);
-/* GLZ_SINGLE_CLEAN_JSA_CREW_FIX_END */
+const glzOldRenderForOneJsa=typeof render==="function"?render:null;
+if(glzOldRenderForOneJsa){
+  render=function(){
+    glzOldRenderForOneJsa();
+    glzRenderJsaSection();
+  };
+}
+
+document.addEventListener("DOMContentLoaded",glzRenderJsaSection);
+setTimeout(glzRenderJsaSection,200);
+setTimeout(glzRenderJsaSection,1000);
+/* GLZ_ONE_JSA_FIELD_SET_END */
 
 </script><!-- JSA_FIELDS_ENABLED_VERIFIED -->
 </body></html>
