@@ -96,7 +96,11 @@ main{padding:0 18px 18px}.stats{display:grid;grid-template-columns:repeat(6,1fr)
 <input id="otherPPE" placeholder="Other PPE / Otro EPP">
 </div>
 <div class="signatureBox"><label>Draw Signature <span style="color:#991b1b">*</span></label><input id="signatureName" placeholder="Signer name"><canvas id="signatureCanvas" class="sigCanvas"></canvas><div class="bar"><button class="secondary" onclick="clearSignaturePad()">Clear Signature Pad</button><button class="primary" onclick="addSignature()">Add Signature</button></div><div id="signatureList"></div></div>
-<div class="bar"><button class="primary" type="button" onclick="saveReport('Submitted')" id="submitBtn">Submit Report</button><button class="secondary" type="button" onclick="saveReport('Draft')" id="draftBtn">Save Draft</button><button class="secondary" onclick="clearForm()" id="clearBtn">Clear</button></div><p class="muted" id="saveStatus"></p></section>
+<div class="bar">
+<button class="primary" type="button" id="submitBtn" onclick="simpleSaveReport('Submitted')">Submit Report</button>
+<button class="secondary" type="button" id="draftBtn" onclick="simpleSaveReport('Draft')">Save Draft</button>
+<button class="secondary" type="button" id="clearBtn" onclick="clearForm()">Clear</button>
+</div><p class="muted" id="saveStatus"></p></section>
 <section class="card hidden" id="adminPanel"><h2 id="adminTitle">Admin Dashboard</h2><p id="adminDesc">Review, close, delete, and export records.</p><label>Search</label><input id="search" placeholder="Search..." oninput="renderReports()">
 <div class="bar"><button class="secondary" onclick="clearAdminFilters()">Clear Filters / Show All</button></div><div class="filterGrid">
   <div><label>Jobsite</label><select id="filterJobsite" onchange="renderReports()"><option value="">All jobsites</option></select></div>
@@ -332,7 +336,7 @@ function saveJsaWorkersFromStatic(){
  persist();
 }
 
-function render(){const x=tr();document.getElementById("title").textContent=x.title;document.getElementById("subtitle").textContent=x.sub;document.getElementById("formsTitle").textContent=x.forms;document.getElementById("roleLabel").textContent=x.role;document.getElementById("jobsiteLabel").textContent=x.jobsite;document.getElementById("submitBtn").textContent=x.submit;document.getElementById("draftBtn").textContent=x.draft;document.getElementById("clearBtn").textContent=x.clear;document.getElementById("dashTitle").textContent=x.dash;document.getElementById("adminTitle").textContent=x.admin;document.getElementById("adminDesc").textContent=x.adminDesc;document.getElementById("sTotal").textContent=x.total;document.getElementById("sSubmitted").textContent=x.submitted;document.getElementById("sDraft").textContent=x.drafts;document.getElementById("sClosed").textContent=x.closed;document.getElementById("roleBox").value=userRole;document.getElementById("adminTab").style.display=isAdmin()?"block":"none";if(!isAdmin()&&panel==="admin")panel="employee";document.getElementById("empTab").className=panel==="employee"?"tab active":"tab";document.getElementById("adminTab").className=panel==="admin"?"tab active":"tab";document.getElementById("employeePanel").className=panel==="employee"?"card":"card hidden";document.getElementById("adminPanel").className=panel==="admin"?"card":"card hidden";renderJobsiteSelect();renderPPEChecklist();renderForms();renderFields();setupSignaturePad();renderSignatureList();renderStats();renderReports();renderAudit();updateSyncStatus()}
+function render(){const x=tr();document.getElementById("title").textContent=x.title;document.getElementById("subtitle").textContent=x.sub;document.getElementById("formsTitle").textContent=x.forms;document.getElementById("roleLabel").textContent=x.role;document.getElementById("jobsiteLabel").textContent=x.jobsite;document.getElementById("submitBtn").textContent=x.submit;document.getElementById("draftBtn").textContent=x.draft;document.getElementById("clearBtn").textContent=x.clear;document.getElementById("dashTitle").textContent=x.dash;document.getElementById("adminTitle").textContent=x.admin;document.getElementById("adminDesc").textContent=x.adminDesc;document.getElementById("sTotal").textContent=x.total;document.getElementById("sSubmitted").textContent=x.submitted;document.getElementById("sDraft").textContent=x.drafts;document.getElementById("sClosed").textContent=x.closed;document.getElementById("roleBox").value=userRole;document.getElementById("adminTab").style.display=isAdmin()?"block":"none";if(!isAdmin()&&panel==="admin")panel="employee";document.getElementById("empTab").className=panel==="employee"?"tab active":"tab";document.getElementById("adminTab").className=panel==="admin"?"tab active":"tab";document.getElementById("employeePanel").className=panel==="employee"?"card":"card hidden";document.getElementById("adminPanel").className=panel==="admin"?"card":"card hidden";renderJobsiteSelect();renderPPEChecklist();renderForms();renderFields();setupSignaturePad();renderSignatureList();renderStats();renderReports();renderAudit();updateSyncStatus();if(typeof bindSaveButtonsHard==='function')bindSaveButtonsHard()}
 function setLang(l){lang=l;localStorage.setItem("glz_lang",l);render()}function setPanel(p){if(p==="admin"&&!isAdmin()){alert("Only supervisors can open admin dashboard.");return}panel=p;render()}function renderForms(){const box=document.getElementById("formButtons");box.innerHTML="";forms.forEach(f=>{const b=document.createElement("button");b.className=f.id===activeFormId?"formBtn active":"formBtn";b.innerHTML="<b>"+f.icon+" "+f[lang].title+"</b><small>"+f[lang].desc+"</small>";b.onclick=()=>{activeFormId=f.id;clearForm();render()};box.appendChild(b)})}
 function renderFields(){
  const f=activeForm();
@@ -765,11 +769,182 @@ document.getElementById("reportModal").addEventListener("click",e=>{if(e.target=
 
 function bindSubmitButtons(){
  const submit=document.getElementById("submitBtn");
- if(submit && !submit.dataset.bound){submit.dataset.bound="1";submit.addEventListener("click",e=>{e.preventDefault();saveReport("Submitted")});}
+ if(submit && !submit.dataset.bound){submit.dataset.bound="1";submit.addEventListener("click",e=>{e.preventDefault();simpleSaveReport("Submitted")});}
  const draft=document.getElementById("draftBtn");
- if(draft && !draft.dataset.bound){draft.dataset.bound="1";draft.addEventListener("click",e=>{e.preventDefault();saveReport("Draft")});}
+ if(draft && !draft.dataset.bound){draft.dataset.bound="1";draft.addEventListener("click",e=>{e.preventDefault();simpleSaveReport("Draft")});}
 }
 
-window.addEventListener("online",manualSync);window.addEventListener("offline",updateSyncStatus);document.addEventListener("keydown",e=>{if(e.key==="Enter"&&document.getElementById("loginOverlay").style.display!=="none")login();if(e.key==="Escape"&&document.getElementById("reportModal").style.display==="flex")closeSubmissionDetail()});bindLoginButtons();bindSubmitButtons();render();setStatus("Loading Firebase...");setFirebaseStatus("Loading login system...");loadFirebase().catch(e=>{console.error(e);setStatus("Firebase failed to load");document.getElementById("loginError").textContent="Firebase failed to load. Use Offline Mode if needed.";document.getElementById("loginError").style.display="block";setFirebaseStatus("Firebase failed to load. Offline Mode still works.")});
+
+function safeFieldValues(){
+ const v={};
+ document.querySelectorAll("[data-field]").forEach(el=>{
+   if(el && el.value && el.value.trim())v[el.dataset.field]=el.value.trim();
+ });
+ if(typeof jsaStaticValues==="function"){
+   Object.assign(v,jsaStaticValues());
+ }
+ const ppe=(typeof getSelectedPPE==="function"?getSelectedPPE():[]);
+ if(ppe.length)v["PPE Used / EPP Usado"]=ppe.join(", ");
+ return v;
+}
+
+function safeValidate(status){
+ return true;
+}
+
+function safeSaveReport(status){
+ try{
+   if(!currentUser){
+     alert("Login first, or use Offline Mode.");
+     return;
+   }
+   if(!safeValidate(status))return;
+
+   const f=activeForm();
+   const rid=id();
+   const file=document.getElementById("photoFile");
+   const vals=safeFieldValues();
+
+   if(typeof saveJsaWorkersFromStatic==="function")saveJsaWorkersFromStatic();
+   if(typeof saveCrewToWorkerListFromValues==="function")saveCrewToWorkerListFromValues(vals);
+
+   const report={
+     id:rid,
+     clientId:rid,
+     localId:rid,
+     company:"GLZSHEETMETAL LLC",
+     language:lang,
+     formId:f.id,
+     formTitle:f[lang].title,
+     status:status,
+     user:currentUser.email,
+     offline:offlineMode,
+     role:userRole,
+     jobsite:(document.getElementById("defaultJobsite").value.trim() || vals["Project / Jobsite"] || vals["Proyecto / Sitio"] || vals["Jobsite / Location"] || ""),
+     values:vals,
+     photoName:document.getElementById("photoName").value.trim()||(file&&file.files&&file.files[0]?file.files[0].name:""),
+     createdAt:new Date().toISOString(),
+     signatures:(typeof currentSignatures!=="undefined"?[...currentSignatures]:[]),
+     cloudSyncStatus:"Pending cloud sync"
+   };
+
+   state.reports=dedupeReports([report,...state.reports]);
+   state.audit.unshift({id:id(),action:status+" report created",reportId:rid,user:currentUser.email,offline:offlineMode,createdAt:new Date().toISOString()});
+   persist();
+
+   if(typeof clearForm==="function")clearForm(false);
+   const ss=document.getElementById("saveStatus");
+   if(ss)ss.textContent=status+" saved.";
+   render();
+   if(typeof syncOne==="function")syncOne(report);
+ }catch(err){
+   console.error("Save failed:",err);
+   alert("Save failed: "+(err.message||err));
+ }
+}
+
+function bindSaveButtonsHard(){
+ const submit=document.getElementById("submitBtn");
+ const draft=document.getElementById("draftBtn");
+ const clear=document.getElementById("clearBtn");
+ if(submit){
+   submit.onclick=null;
+   if(!submit.dataset.hardBound){
+     submit.dataset.hardBound="1";
+     submit.addEventListener("click",function(e){e.preventDefault();simpleSaveReport("Submitted");});
+   }
+ }
+ if(draft){
+   draft.onclick=null;
+   if(!draft.dataset.hardBound){
+     draft.dataset.hardBound="1";
+     draft.addEventListener("click",function(e){e.preventDefault();simpleSaveReport("Draft");});
+   }
+ }
+ if(clear){
+   clear.onclick=null;
+   if(!clear.dataset.hardBound){
+     clear.dataset.hardBound="1";
+     clear.addEventListener("click",function(e){e.preventDefault();clearForm();});
+   }
+ }
+}
+
+
+function simpleSaveReport(status){
+ try{
+   if(!currentUser){
+     alert("Login first, or use Offline Mode.");
+     return;
+   }
+
+   const f=activeForm();
+   const rid=id();
+   const file=document.getElementById("photoFile");
+   const vals={};
+
+   document.querySelectorAll("[data-field]").forEach(el=>{
+     if(el && el.dataset && el.dataset.field && el.value && el.value.trim()){
+       vals[el.dataset.field]=el.value.trim();
+     }
+   });
+
+   if(typeof jsaStaticValues==="function"){
+     Object.assign(vals,jsaStaticValues());
+   }
+
+   if(typeof getSelectedPPE==="function"){
+     const ppe=getSelectedPPE();
+     if(ppe.length)vals["PPE Used / EPP Usado"]=ppe.join(", ");
+   }
+
+   if(typeof saveJsaWorkersFromStatic==="function")saveJsaWorkersFromStatic();
+   if(typeof saveCrewToWorkerListFromValues==="function")saveCrewToWorkerListFromValues(vals);
+
+   const jobsite=document.getElementById("defaultJobsite")?.value?.trim()
+     || vals["Project / Jobsite"]
+     || vals["Proyecto / Sitio"]
+     || vals["Jobsite / Location"]
+     || vals["Project / Jobsite"]
+     || "";
+
+   const report={
+     id:rid,
+     clientId:rid,
+     localId:rid,
+     company:"GLZSHEETMETAL LLC",
+     language:lang,
+     formId:f.id,
+     formTitle:f[lang].title,
+     status:status,
+     user:currentUser.email,
+     offline:offlineMode,
+     role:userRole,
+     jobsite:jobsite,
+     values:vals,
+     photoName:document.getElementById("photoName")?.value?.trim() || (file&&file.files&&file.files[0]?file.files[0].name:""),
+     createdAt:new Date().toISOString(),
+     signatures:(typeof currentSignatures!=="undefined"?[...currentSignatures]:[]),
+     cloudSyncStatus:"Pending cloud sync"
+   };
+
+   state.reports=dedupeReports([report,...state.reports]);
+   state.audit.unshift({id:id(),action:status+" report created",reportId:rid,user:currentUser.email,offline:offlineMode,createdAt:new Date().toISOString()});
+   persist();
+
+   const ss=document.getElementById("saveStatus");
+   if(ss)ss.textContent=status+" saved.";
+
+   if(typeof clearForm==="function")clearForm(false);
+   render();
+
+   if(typeof syncOne==="function")syncOne(report);
+ }catch(err){
+   console.error("Simple save failed:",err);
+   alert("Save failed: "+(err.message||err));
+ }
+}
+
+window.addEventListener("online",manualSync);window.addEventListener("offline",updateSyncStatus);document.addEventListener("keydown",e=>{if(e.key==="Enter"&&document.getElementById("loginOverlay").style.display!=="none")login();if(e.key==="Escape"&&document.getElementById("reportModal").style.display==="flex")closeSubmissionDetail()});bindLoginButtons();bindSubmitButtons();bindSaveButtonsHard();bindSaveButtonsHard();render();setStatus("Loading Firebase...");setFirebaseStatus("Loading login system...");loadFirebase().catch(e=>{console.error(e);setStatus("Firebase failed to load");document.getElementById("loginError").textContent="Firebase failed to load. Use Offline Mode if needed.";document.getElementById("loginError").style.display="block";setFirebaseStatus("Firebase failed to load. Offline Mode still works.")});
 </script><!-- JSA_FIELDS_ENABLED_VERIFIED -->
 </body></html>
