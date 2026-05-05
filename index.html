@@ -1380,5 +1380,80 @@ function renderReportCard(r){
 }
 /* GLZ_DEDUP_DELETE_FIX_END */
 
+
+
+/* GLZ_FILTER_POPULATE_FIX_START */
+function glzAllReportsForFilters(){
+  return (state && state.reports) ? state.reports : [];
+}
+
+function glzNormalizeText(v){
+  return String(v || "").trim();
+}
+
+function glzReportJobsite(r){
+  return glzNormalizeText(
+    r.jobsite ||
+    (r.values && (r.values["Project / Jobsite"] || r.values["Proyecto / Sitio"] || r.values["Jobsite / Location"] || r.values["Jobsite"])) ||
+    ""
+  );
+}
+
+function populateAdminFilters(){
+  const fj=document.getElementById("filterJobsite");
+  const fu=document.getElementById("filterUser");
+  if(!fj || !fu)return;
+
+  const curJ=fj.value || "";
+  const curU=fu.value || "";
+
+  const source=glzAllReportsForFilters();
+
+  const jobs=[...new Set(source.map(glzReportJobsite).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  const users=[...new Set(source.map(r=>glzNormalizeText(r.user).toLowerCase()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+
+  fj.innerHTML='<option value="">All jobsites</option>' + jobs.map(j=>'<option value="'+escapeHTML(j)+'">'+escapeHTML(j)+'</option>').join("");
+  fu.innerHTML='<option value="">All users</option>' + users.map(u=>'<option value="'+escapeHTML(u)+'">'+escapeHTML(u)+'</option>').join("");
+
+  if(jobs.includes(curJ))fj.value=curJ;
+  if(users.includes(curU))fu.value=curU;
+}
+
+function applyAdminFilters(list){
+  const q=((document.getElementById("search")?.value||document.getElementById("sideSearch")?.value||"").toLowerCase());
+  const job=document.getElementById("filterJobsite")?.value||"";
+  const user=document.getElementById("filterUser")?.value||"";
+  const status=document.getElementById("filterStatus")?.value||"";
+
+  return (list||[]).filter(r=>{
+    const reportJob=glzReportJobsite(r);
+    const reportUser=glzNormalizeText(r.user).toLowerCase();
+
+    if(q && !JSON.stringify(r).toLowerCase().includes(q))return false;
+    if(job && reportJob!==job)return false;
+    if(user && reportUser!==user)return false;
+    if(status && (r.status||"")!==status)return false;
+    return true;
+  });
+}
+
+function render(){
+  renderJobsiteSelect();
+  if(typeof renderPPEChecklist==="function")renderPPEChecklist();
+  renderForms();
+  renderFields();
+  if(typeof renderJsaRequiredSection==="function")renderJsaRequiredSection();
+  setupSignaturePad();
+  renderSignatureList();
+  populateAdminFilters();
+  renderStats();
+  renderReports();
+  renderAudit();
+  updateSyncStatus();
+  try{if(typeof bindSaveButtonsHard==="function")bindSaveButtonsHard()}catch(e){}
+  try{if(typeof glzBindQuickJsaButtons==="function")glzBindQuickJsaButtons()}catch(e){}
+}
+/* GLZ_FILTER_POPULATE_FIX_END */
+
 </script><!-- JSA_FIELDS_ENABLED_VERIFIED -->
 </body></html>
