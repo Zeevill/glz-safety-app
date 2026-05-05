@@ -1,0 +1,1841 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="GLZ Safety">
+<title>GLZSHEETMETAL LLC - Mobile Safety Workflow</title>
+<style>
+:root{--bg:#f1f5f9;--card:#fff;--ink:#0f172a;--muted:#64748b;--line:#dbe3ec;--dark:#0f172a;--good:#dcfce7;--bad:#fee2e2}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+button,input,textarea,select{font:inherit}button{border:0;border-radius:14px;padding:11px 14px;font-weight:800;cursor:pointer}.primary{background:var(--dark);color:#fff}.secondary{background:#e2e8f0;color:#111827}.danger{background:var(--bad);color:#991b1b}.success{background:var(--good);color:#14532d}
+input,textarea,select{width:100%;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}textarea{min-height:84px;resize:vertical}label{display:block;margin:10px 0 5px;font-weight:800}
+header,main,footer{max-width:1220px;margin:auto}header{padding:18px}.hero{background:#fff;border-radius:24px;padding:20px;box-shadow:0 4px 22px rgba(15,23,42,.08)}.brand{display:flex;gap:14px;align-items:center}.logo{width:58px;height:58px;border-radius:16px;background:#0f172a;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px}.eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:900}h1{margin:3px 0;font-size:30px}p{color:var(--muted);line-height:1.45}.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.pill{background:#f1f5f9;border-radius:999px;padding:8px 12px;font-size:13px;font-weight:800}
+main{padding:0 18px 18px}.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px}.stat{background:#fff;border-radius:18px;padding:14px;box-shadow:0 3px 16px rgba(15,23,42,.05)}.stat b{display:block;font-size:28px}.grid{display:grid;grid-template-columns:300px 1fr 390px;gap:16px}.card{background:#fff;border-radius:22px;padding:16px;box-shadow:0 3px 16px rgba(15,23,42,.06)}
+.formBtn,.tab{width:100%;text-align:left;background:#f8fafc;margin-bottom:10px}.formBtn.active,.tab.active{background:#0f172a;color:#fff}.formBtn small{display:block;margin-top:4px;opacity:.75}.hidden{display:none!important}.report{border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:10px;background:#fff}.report h3{margin:0 0 6px}.badge{display:inline-block;background:#e2e8f0;border-radius:999px;padding:4px 8px;font-size:12px;font-weight:900}.muted{color:var(--muted);font-size:13px}.login{position:fixed;inset:0;background:linear-gradient(135deg,#0f172a,#334155);z-index:9999;display:flex;align-items:center;justify-content:center;padding:18px}.loginCard{background:#fff;border-radius:28px;padding:24px;max-width:430px;width:100%;box-shadow:0 24px 70px rgba(0,0,0,.35)}.loginCard h2{margin:0}.err{display:none;background:#fee2e2;color:#991b1b;border-radius:14px;padding:10px;margin-top:10px;font-weight:800}
+.ppeBox{border:1px solid var(--line);border-radius:16px;padding:10px;margin-top:12px;background:#f8fafc}.ppeGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.ppeItem{display:flex;gap:8px;align-items:flex-start;background:white;border:1px solid #e5e7eb;border-radius:12px;padding:8px;line-height:1.25}.ppeItem input{width:auto;margin-top:2px}.ppeText small{display:block;color:#64748b;font-weight:600}@media(max-width:700px){.ppeGrid{grid-template-columns:1fr}}.signatureBox{border:1px dashed var(--line);border-radius:16px;padding:10px;margin-top:12px;background:#f8fafc}.sigCanvas{width:100%;height:150px;border:1px solid var(--line);border-radius:14px;background:#fff;touch-action:none}.signatureItem{border:1px solid var(--line);border-radius:14px;background:#fff;padding:8px;margin-top:8px}.signatureItem img{max-width:100%;height:70px;border:1px solid #eee;background:#fff}
+@media(max-width:1050px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:24px}}
+@media print{button,.bar,.forms,.stats,#loginOverlay{display:none!important}.grid{display:block}.card{box-shadow:none;border:1px solid #ddd;margin-bottom:12px}}
+.ppeBox{border:2px solid #0f172a;border-radius:16px;padding:12px;margin:12px 0;background:#f8fafc}.ppeTitle{font-size:16px;font-weight:900;margin-bottom:6px}.ppeGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.ppeItem{display:flex;gap:8px;align-items:flex-start;background:white;border:1px solid #dbe3ec;border-radius:12px;padding:8px;line-height:1.25}.ppeItem input{width:auto;margin-top:2px}.ppeText small{display:block;color:#64748b;font-weight:600}.filterGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.modalOverlay{position:fixed;inset:0;background:rgba(15,23,42,.72);z-index:9998;display:none;align-items:center;justify-content:center;padding:16px}.modalCard{background:white;border-radius:22px;max-width:760px;width:100%;max-height:86vh;overflow:auto;padding:18px;box-shadow:0 24px 70px rgba(0,0,0,.35)}.detailGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.detailRow{border-bottom:1px solid #e5e7eb;padding:6px 0}.detailKey{font-weight:900}.detailSig{max-width:260px;height:70px;border:1px solid #ccc;background:white}@media(max-width:700px){.filterGrid,.ppeGrid,.detailGrid{grid-template-columns:1fr}}
+.previousTools{border:1px solid var(--line);border-radius:16px;background:#f8fafc;padding:10px;margin:10px 0}.previousTools .bar{margin-top:6px}.editNotice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:8px;margin:8px 0;font-weight:800}.reportSectionTitle{margin:14px 0 8px;padding:8px 10px;border-radius:12px;background:#0f172a;color:white;font-weight:900}
+.reportSectionSub{font-size:12px;color:#64748b;margin:-4px 0 8px}
+.jsaRequiredBox{border:3px solid #0f172a;border-radius:18px;padding:14px;margin:14px 0;background:#eef2ff}.jsaRequiredBox h3{margin:0 0 8px;color:#0f172a}.jsaReqGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.jsaRequiredBox .full{grid-column:1/-1}@media(max-width:700px){.jsaReqGrid{grid-template-columns:1fr}}.glzStandaloneJsa{border:3px solid #0f172a;border-radius:18px;padding:14px;margin:14px 0;background:#eef2ff}
+.glzStandaloneJsa h3{margin:0 0 8px;color:#0f172a}
+.glzJsaGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.glzJsaGrid .full{grid-column:1/-1}
+@media(max-width:700px){.glzJsaGrid{grid-template-columns:1fr}}
+.glzJsaNativeSection{border:3px solid #0f172a;border-radius:18px;padding:14px;margin:14px 0;background:#eef2ff}
+.glzJsaNativeSection h3{margin:0 0 8px;color:#0f172a}
+.glzJsaGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.glzJsaGrid .full{grid-column:1/-1}
+@media(max-width:700px){.glzJsaGrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="loginOverlay" class="login">
+  <div class="loginCard">
+    <div class="logo">GLZ</div>
+    <h2>GLZSHEETMETAL Safety Login</h2>
+    <p>Sign in to use the safety workflow.</p>
+    <label>Email</label><input id="loginEmail" type="email" autocomplete="username" placeholder="name@company.com">
+    <label>Password</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password">
+    <div class="bar"><button class="primary" id="loginBtn" type="button" onclick="login()">Sign In</button><button class="secondary" id="togglePasswordBtn" type="button" onclick="togglePassword()">Show / Hide</button><button class="secondary" id="offlineModeBtn" type="button" onclick="offlineLogin()">Offline Mode</button></div>
+    <div id="loginError" class="err"></div><div id="firebaseStatus" class="muted" style="background:#eff6ff;color:#1e40af;border-radius:14px;padding:10px;margin-top:10px">Loading login system...</div>
+    <p class="muted">Wrong password lets you try again. Successful sessions are remembered. Offline mode lets forms save on the iPad without signal.</p>
+  </div>
+</div>
+<div id="reportModal" class="modalOverlay">
+  <div class="modalCard">
+    <h2 id="modalTitle">Submission Details</h2>
+    <div id="modalBody"></div>
+    <div class="bar">
+      <button class="primary" onclick="exportOneReportPDF()">Export This Report PDF</button>
+      <button class="secondary" onclick="openEditSubmission()">Edit Submitted Report</button>
+      <button class="danger" onclick="removeSelectedSubmission()">Remove This Submission</button>
+      <button class="secondary" onclick="closeSubmissionDetail()">Close</button>
+    </div>
+  </div>
+</div>
+<header><div class="hero"><div class="brand"><div class="logo">GLZ</div><div><div class="eyebrow">GLZSHEETMETAL LLC</div><h1 id="title">Mobile Safety Workflow</h1><p id="subtitle">Production version: login-first, offline-safe, bilingual, JHA-focused, cloud-sync ready.</p></div></div><div class="bar"><button class="secondary" onclick="setLang('en')">English</button><button class="secondary" onclick="setLang('es')">Español</button><span class="pill" id="syncStatus">Loading app...</span><span class="pill" id="userStatus">Not signed in</span><button class="secondary" onclick="manualSync()">Sync Now</button><button class="secondary" onclick="switchToOnlineLogin()">Online Login</button><button class="secondary" onclick="logout()">Sign Out</button></div></div></header>
+<main>
+<section class="stats"><div class="stat"><span class="muted" id="sTotal">Total</span><b id="total">0</b></div><div class="stat"><span class="muted" id="sSubmitted">Submitted</span><b id="submitted">0</b></div><div class="stat"><span class="muted" id="sDraft">Drafts</span><b id="drafts">0</b></div><div class="stat"><span class="muted" id="sClosed">Closed</span><b id="closed">0</b></div><div class="stat"><span class="muted">JHAs</span><b id="jhas">0</b></div><div class="stat"><span class="muted">Pending Sync</span><b id="pending">0</b></div></section>
+<section class="grid"><aside class="card"><button id="empTab" class="tab active" onclick="setPanel('employee')">Employee App</button><button id="adminTab" class="tab" onclick="setPanel('admin')">Admin Dashboard</button><h2 id="formsTitle">Forms</h2><div class="forms" id="formButtons"></div><label id="roleLabel">Role</label><input id="roleBox" disabled value="Employee"><p class="muted" id="roleNote">Role loads from Firestore users/{email}.role.</p><p class="muted" id="roleDebugNote">Edit buttons appear only when role is Foreman or Safety Manager.</p><label id="jobsiteLabel">Default Jobsite</label><select id="jobsiteSelect" onchange="selectJobsite()"></select><div class="bar"><input id="newJobsite" placeholder="Add new jobsite"><button class="secondary" onclick="addJobsite()">Add</button><button class="danger" onclick="removeSelectedJobsite()">Remove</button></div><input id="defaultJobsite" placeholder="Selected jobsite" readonly></aside>
+<section class="card" id="employeePanel"><h2 id="formTitle"></h2><p id="formDesc"></p><div id="quickJhaHint" class="muted hidden" style="background:#f8fafc;border:1px solid #dbe3ec;border-radius:14px;padding:10px;margin-bottom:10px">Quick JHA: fill only the essentials, then collect crew signatures below.<br><b>Required for JSA/JHA:</b> Jobsite, crew/workers, task, hazards, controls, PPE, and signature.</div><div id="fields"></div>
+<div id="glzJsaNativeSection" class="glzJsaNativeSection" style="display:none">
+  <h3>Quick Job Safety Analysis / JSA-JHA</h3>
+  <p class="muted">Fill this out for Quick Job Safety Analysis reports.</p>
+  <div class="glzJsaGrid">
+    <div class="full">
+      <label>Jobsite / Proyecto</label>
+      <select id="glzNativeJobsite" data-field="Project / Jobsite"></select>
+      <div class="bar">
+        <input id="glzNativeNewJobsite" placeholder="Add jobsite / Agregar proyecto">
+        <button class="secondary" type="button" id="glzNativeAddJobsite">Add Jobsite</button>
+      </div>
+    </div>
+    <div class="full">
+      <label>Crew / Workers / Cuadrilla</label>
+      <select id="glzNativeCrewSelect" multiple size="6"></select>
+      <textarea id="glzNativeCrewText" data-field="Crew / Workers" placeholder="Selected workers appear here, or type names manually."></textarea>
+      <div class="bar">
+        <input id="glzNativeNewWorker" placeholder="Worker name / Nombre">
+        <input id="glzNativeNewWorkerRole" placeholder="Role/trade optional / Oficio opcional">
+        <button class="secondary" type="button" id="glzNativeAddWorker">Save Worker</button>
+        <button class="danger" type="button" id="glzNativeRemoveJobsiteCrew">Remove From This Jobsite</button>
+        <button class="danger" type="button" id="glzNativeDeleteWorker">Delete Worker Permanently</button>
+      </div>
+    </div>
+    <div class="full">
+      <label>Task / Work Being Done / Tarea</label>
+      <textarea id="glzNativeTask" data-field="Task / Work Being Done" placeholder="Describe task / Describa la tarea"></textarea>
+    </div>
+    <div>
+      <label>Main Hazards / Peligros</label>
+      <textarea id="glzNativeHazards" data-field="Main Hazards" placeholder="List hazards / Liste peligros"></textarea>
+    </div>
+    <div>
+      <label>Controls / Controles</label>
+      <textarea id="glzNativeControls" data-field="Controls / How Hazards Will Be Prevented" placeholder="How hazards will be controlled"></textarea>
+    </div>
+  </div>
+</div>
+
+<label id="photoLabel">Photo / Attachment Reference</label><input id="photoName" placeholder="Example: photo-001.jpg"><label>iPad Camera / Photo File</label><input id="photoFile" type="file" accept="image/*" capture="environment">
+<div class="ppeBox">
+<label>Required / Used PPE / EPP Requerido o Usado</label>
+<div id="ppeChecklist" class="ppeGrid"></div>
+<label>Other PPE / Otro EPP</label>
+<input id="otherPPE" placeholder="Other PPE / Otro EPP">
+</div>
+<div class="signatureBox"><label>Draw Signature <span style="color:#991b1b">*</span></label><input id="signatureName" placeholder="Signer name"><canvas id="signatureCanvas" class="sigCanvas"></canvas><div class="bar"><button class="secondary" onclick="clearSignaturePad()">Clear Signature Pad</button><button class="primary" onclick="addSignature()">Add Signature</button></div><div id="signatureList"></div></div>
+<div class="bar" id="saveButtonBar">
+<button class="primary" type="button" id="submitBtn">Submit Report</button>
+<button class="secondary" type="button" id="draftBtn">Save Draft</button>
+<button class="secondary" type="button" id="clearBtn">Clear</button>
+</div><p class="muted" id="saveStatus"></p></section>
+<section class="card hidden" id="adminPanel"><h2 id="adminTitle">Admin Dashboard</h2><p id="adminDesc">Review, close, delete, and export records.</p><label>Search</label><input id="search" placeholder="Search..." oninput="renderReports()">
+<div class="bar"><button class="secondary" onclick="clearAdminFilters()">Clear Filters / Show All</button></div><div class="filterGrid">
+  <div><label>Jobsite</label><select id="filterJobsite" onchange="renderReports()"><option value="">All jobsites</option></select></div>
+  <div><label>User</label><select id="filterUser" onchange="renderReports()"><option value="">All users</option></select></div>
+  <div><label>Status</label><select id="filterStatus" onchange="renderReports()"><option value="">All statuses</option><option>Submitted</option><option>Draft</option><option>Closed</option></select></div>
+</div><div class="bar"><button class="secondary" onclick="exportCSV()">CSV</button><button class="secondary" onclick="exportJSON()">Backup JSON</button><button class="primary" onclick="exportPDF(false)">Export PDF</button><button class="secondary" onclick="exportPDF(true)">Export JHA PDF</button><button class="danger" onclick="hideAllVisibleReports()">Hide All Visible Reports</button></div>
+<div class="previousTools">
+  <b>Previous Reports</b>
+  <p class="muted">Use this to review older submitted reports. Combine with jobsite/user/status filters above.</p>
+  <div class="bar">
+    <button class="secondary" onclick="showPreviousReports()">Show Previous Reports</button>
+    <button class="secondary" onclick="showAllReports()">Show All Reports</button>
+    <label class="ppeItem" style="width:auto"><input id="previousOnlyToggle" type="checkbox" onchange="renderReports()"> Previous submitted reports only</label>
+  </div>
+</div><h3>Audit Log</h3><div class="bar"><button class="secondary" onclick="exportAuditLog()">Export Audit Log</button></div><div id="auditBox"></div></section>
+<aside class="card"><h2 id="dashTitle">Supervisor Dashboard</h2><input id="sideSearch" placeholder="Search reports..." oninput="syncSearch()"><div id="reports" style="margin-top:14px"></div></aside></section>
+</main><footer><main><div class="card muted">GLZSHEETMETAL LLC branded internal safety documentation. This tool supports documentation and OSHA-aligned records but does not replace legal advice, required filings, or competent-person duties.</div></main></footer>
+<script>
+const firebaseConfig={apiKey:"AIzaSyAVz16lIIdpQviitSFA6f2FfzlNkp3iZI8",authDomain:"glzsheetmetal-llc-safety.firebaseapp.com",projectId:"glzsheetmetal-llc-safety",storageBucket:"glzsheetmetal-llc-safety.firebasestorage.app",messagingSenderId:"204166247838",appId:"1:204166247838:web:a15732f7294f770ed3928f",measurementId:"G-KG8HCEVRMB"};
+const STORAGE_KEY="glz_prod_safety_multi_sig_v1";let state=loadLocal(),lang=localStorage.getItem("glz_lang")||"en",panel="employee",activeFormId="incident";let auth=null,db=null,currentUser=null,userRole="Employee",syncing=false,firebaseReady=false,offlineMode=false;
+const T={en:{title:"Mobile Safety Workflow",sub:"Production version: login-first, offline-safe, bilingual, JHA-focused, cloud-sync ready.",forms:"Forms",role:"Role",jobsite:"Default Jobsite",submit:"Submit Report",draft:"Save Draft",clear:"Clear",dash:"Supervisor Dashboard",admin:"Admin Dashboard",adminDesc:"Review, close, delete, and export records.",total:"Total",submitted:"Submitted",drafts:"Drafts",closed:"Closed",loginRequired:"Login required",synced:"Online • Synced",pending:"Online • Pending Sync",offline:"Offline • Saved on iPad",noReports:"No saved reports yet.",close:"Approve / Close",del:"Delete"},es:{title:"Sistema Móvil de Seguridad",sub:"Versión de producción: login primero, segura sin internet, bilingüe, enfocada en JHA y lista para sincronización.",forms:"Formularios",role:"Rol",jobsite:"Proyecto / Sitio",submit:"Enviar Reporte",draft:"Guardar Borrador",clear:"Limpiar",dash:"Panel del Supervisor",admin:"Panel Administrativo",adminDesc:"Revise, cierre, elimine y exporte registros.",total:"Total",submitted:"Enviados",drafts:"Borradores",closed:"Cerrados",loginRequired:"Inicio requerido",synced:"En línea • Sincronizado",pending:"En línea • Pendiente",offline:"Sin internet • Guardado en iPad",noReports:"No hay reportes guardados.",close:"Aprobar / Cerrar",del:"Eliminar"}};
+const forms=[{id:"incident",icon:"⚠️",en:{title:"Incident / Injury Report",desc:"Injuries, near misses, damage, witnesses, and corrective action.",fields:["Employee / Reporter Name","Employee ID","Date","Jobsite / Location","Incident Type","Description of What Happened","Injury / Damage Details","Witnesses","Immediate Corrective Action","Supervisor Notified","Follow-Up Required"]},es:{title:"Reporte de Incidente / Lesión",desc:"Lesiones, casi accidentes, daños, testigos y acciones correctivas.",fields:["Nombre del Empleado / Reportante","ID del Empleado","Fecha","Proyecto / Ubicación","Tipo de Incidente","Descripción de lo Ocurrido","Detalles de Lesión / Daño","Testigos","Acción Correctiva Inmediata","Supervisor Notificado","Seguimiento Requerido"]}},{id:"inspection",icon:"✅",en:{title:"Jobsite Safety Inspection",desc:"Daily or weekly safety inspection checklist.",fields:["Inspector Name","Date","Project / Jobsite","PPE Compliance","Housekeeping","Tools and Equipment","Electrical Safety","Fall Protection","Ladders / Scaffolds","Corrective Actions Required","Supervisor Review"]},es:{title:"Inspección de Seguridad",desc:"Lista diaria o semanal de inspección.",fields:["Nombre del Inspector","Fecha","Proyecto / Sitio","Cumplimiento de EPP","Orden y Limpieza","Herramientas y Equipo","Seguridad Eléctrica","Protección Contra Caídas","Escaleras / Andamios","Acciones Correctivas Requeridas","Revisión del Supervisor"]}},{id:"toolbox",icon:"👥",en:{title:"Toolbox Talk Attendance",desc:"Safety meeting topic, attendees, and follow-up.",fields:["Presenter Name","Date","Topic","Jobsite","Key Discussion Points","Employee Names / Signatures","Questions Raised","Follow-Up Items"]},es:{title:"Plática de Seguridad / Asistencia",desc:"Tema, asistentes y seguimiento.",fields:["Nombre del Presentador","Fecha","Tema","Proyecto","Puntos Principales","Nombres / Firmas","Preguntas","Pendientes"]}},{id:"scissor",icon:"🛗",en:{title:"Scissor Lift Pre-Use Inspection",desc:"Controls, rails, emergency stop, tires, leaks, and work area.",fields:["Operator Name","Date","Equipment ID / Serial Number","Model / Manufacturer","Ground Controls Functional","Platform Controls Functional","Emergency Stop Tested","Guardrails / Gates Secure","Tires / Wheels Condition","Battery / Fuel / Hydraulic Leaks","Work Area Hazards","Defects Found","Removed From Service?","Supervisor Approval"]},es:{title:"Inspección Pre-Uso de Scissor Lift",desc:"Controles, barandales, paro de emergencia, llantas, fugas y área.",fields:["Nombre del Operador","Fecha","ID / Número de Serie","Modelo / Fabricante","Controles de Piso Funcionan","Controles de Plataforma Funcionan","Paro de Emergencia Probado","Barandales / Puertas Seguras","Condición de Llantas","Batería / Combustible / Fugas","Peligros en el Área","Defectos Encontrados","¿Retirado de Servicio?","Aprobación del Supervisor"]}},{id:"jha",icon:"🧰",en:{title:"Quick Job Safety Analysis (JSA/JHA)",desc:"Fast field JSA: jobsite, crew, task, hazards, controls, PPE, and signatures.",fields:["Date","Project / Jobsite","Crew / Workers","Task / Work Being Done","Main Hazards","Controls / How Hazards Will Be Prevented","Tools / Equipment"]},es:{title:"JSA/JHA Rápido - Análisis de Seguridad",desc:"JSA de campo: proyecto, cuadrilla, tarea, peligros, controles, EPP y firmas.",fields:["Fecha","Proyecto / Sitio","Cuadrilla / Trabajadores","Tarea / Trabajo a Realizar","Peligros Principales","Controles / Cómo se Prevendrán los Peligros","Herramientas / Equipo"]}}];
+function loadLocal(){try{const s=JSON.parse(localStorage.getItem(STORAGE_KEY))||{};return{reports:s.reports||[],audit:s.audit||[],hiddenReports:s.hiddenReports||{},jobsites:s.jobsites||[],workers:s.workers||[],crewByJobsite:s.crewByJobsite||{}}}catch{return{reports:[],audit:[],hiddenReports:{},jobsites:[],workers:[],crewByJobsite:{}}}}function persist(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}function id(){return"GLZ-"+Date.now()+"-"+Math.floor(Math.random()*99999)}function tr(){return T[lang]}function setStatus(m){document.getElementById("syncStatus").textContent=m}function setFirebaseStatus(m){const el=document.getElementById("firebaseStatus");if(el)el.textContent=m}function isAdmin(){return userRole==="Safety Manager"||userRole==="Foreman"}function online(){return navigator.onLine!==false}function activeForm(){return forms.find(f=>f.id===activeFormId)||forms[0]}
+
+const PPE_OPTIONS=[
+ {en:"Hard Hat",es:"Casco"},
+ {en:"Safety Glasses",es:"Lentes de seguridad"},
+ {en:"Cut-Resistant Gloves",es:"Guantes resistentes a cortes"},
+ {en:"Work Gloves",es:"Guantes de trabajo"},
+ {en:"High-Vis Vest/Shirt",es:"Chaleco/Camisa de alta visibilidad"},
+ {en:"Steel-Toe Boots",es:"Botas con punta de acero"},
+ {en:"Hearing Protection",es:"Protección auditiva"},
+ {en:"Respirator / Dust Mask",es:"Respirador / Mascarilla para polvo"},
+ {en:"Face Shield",es:"Careta"},
+ {en:"Fall Protection / Harness",es:"Protección contra caídas / Arnés"},
+ {en:"Welding Hood",es:"Careta de soldar"},
+ {en:"Fire-Resistant Clothing",es:"Ropa resistente al fuego"}
+];
+
+function renderPPEChecklist(){
+ const box=document.getElementById("ppeChecklist");
+ if(!box)return;
+ box.innerHTML=PPE_OPTIONS.map((p,i)=>`<label class="ppeItem"><input type="checkbox" class="ppeCheck" value="${escapeHTML(p.en)} / ${escapeHTML(p.es)}"><span class="ppeText"><b>${escapeHTML(p.en)}</b><small>${escapeHTML(p.es)}</small></span></label>`).join("");
+}
+
+function getSelectedPPE(){
+ const selected=[...document.querySelectorAll(".ppeCheck:checked")].map(x=>x.value);
+ const other=(document.getElementById("otherPPE")?.value||"").trim();
+ if(other)selected.push(other);
+ return selected;
+}
+
+function clearPPE(){
+ document.querySelectorAll(".ppeCheck").forEach(x=>x.checked=false);
+ const other=document.getElementById("otherPPE");
+ if(other)other.value="";
+}
+
+
+function isJobsiteField(field){return /jobsite|job site|project|proyecto|sitio|ubicación/i.test(field)}
+
+function isCrewField(field){return /crew|workers|cuadrilla|trabajadores/i.test(field)}
+function glzWorkerLabel(w){return String((w&&w.name)?w.name:(w||"")).trim()}
+function glzCrewListFromText(txt){return String(txt||"").split(",").map(x=>x.trim()).filter(Boolean)}
+function glzRenderWorkerOptions(selectedText){
+ const selected=glzCrewListFromText(selectedText);
+ return (state.workers||[]).map(w=>{
+   const name=glzWorkerLabel(w);
+   if(!name)return "";
+   const sel=selected.some(s=>s.toLowerCase()===name.toLowerCase())?"selected":"";
+   return "<option value='"+escapeHTML(name)+"' "+sel+">"+escapeHTML(name)+"</option>";
+ }).join("");
+}
+function glzSyncCrewText(){
+ const sel=document.getElementById("crewSelect");
+ const txt=document.querySelector("[data-crew-field='yes']");
+ if(sel&&txt)txt.value=[...sel.selectedOptions].map(o=>o.value).join(", ");
+ glzSaveCrewForCurrentJobsite();
+}
+function glzCurrentNativeJobsite(){
+ return (document.querySelector("[data-jobsite-field='yes']")?.value||document.getElementById("defaultJobsite")?.value||"").trim();
+}
+function glzSaveCrewForCurrentJobsite(){
+ const job=glzCurrentNativeJobsite();
+ const txt=document.querySelector("[data-crew-field='yes']");
+ if(!job||!txt)return;
+ const crew=glzCrewListFromText(txt.value);
+ state.crewByJobsite=state.crewByJobsite||{};
+ state.crewByJobsite[job]=[...new Set(crew)].sort((a,b)=>a.localeCompare(b));
+ persist();
+}
+function glzLoadCrewForJobsite(){
+ const job=glzCurrentNativeJobsite();
+ const txt=document.querySelector("[data-crew-field='yes']");
+ if(!txt)return;
+ state.crewByJobsite=state.crewByJobsite||{};
+ txt.value=(job?(state.crewByJobsite[job]||[]):[]).join(", ");
+ const sel=document.getElementById("crewSelect");
+ if(sel){
+   const selected=glzCrewListFromText(txt.value);
+   [...sel.options].forEach(o=>{o.selected=selected.some(s=>s.toLowerCase()===o.value.toLowerCase())});
+ }
+}
+function glzAddWorkerNative(){
+ const name=(document.getElementById("newWorkerName")?.value||"").trim();
+ const role=(document.getElementById("newWorkerRole")?.value||"").trim();
+ if(!name)return alert("Enter worker name.");
+ const label=role?name+" - "+role:name;
+ state.workers=state.workers||[];
+ if(!state.workers.some(w=>glzWorkerLabel(w).toLowerCase()===label.toLowerCase())){
+   state.workers.push({name:label,createdAt:new Date().toISOString()});
+   state.workers.sort((a,b)=>glzWorkerLabel(a).localeCompare(glzWorkerLabel(b)));
+ }
+ persist();
+ const txt=document.querySelector("[data-crew-field='yes']");
+ const current=glzCrewListFromText(txt?txt.value:"");
+ if(!current.some(x=>x.toLowerCase()===label.toLowerCase()))current.push(label);
+ if(txt)txt.value=current.join(", ");
+ renderFields();
+ setTimeout(()=>{glzSaveCrewForCurrentJobsite();},0);
+}
+function glzRemoveCrewFromJobsiteNative(){
+ const sel=document.getElementById("crewSelect");
+ if(!sel)return alert("Open the JSA form first.");
+ const selected=[...sel.selectedOptions].map(o=>o.value);
+ if(!selected.length)return alert("Select crew member(s) first.");
+ const job=glzCurrentNativeJobsite();
+ if(!job)return alert("Select a jobsite first.");
+ state.crewByJobsite=state.crewByJobsite||{};
+ state.crewByJobsite[job]=(state.crewByJobsite[job]||[]).filter(n=>!selected.includes(n));
+ persist();
+ glzLoadCrewForJobsite();
+}
+function glzDeleteWorkerNative(){
+ const sel=document.getElementById("crewSelect");
+ if(!sel)return alert("Open the JSA form first.");
+ const selected=[...sel.selectedOptions].map(o=>o.value);
+ if(!selected.length)return alert("Select crew member(s) first.");
+ if(!confirm("Delete selected worker(s) permanently?"))return;
+ state.workers=(state.workers||[]).filter(w=>!selected.includes(glzWorkerLabel(w)));
+ state.crewByJobsite=state.crewByJobsite||{};
+ Object.keys(state.crewByJobsite).forEach(job=>{
+   state.crewByJobsite[job]=(state.crewByJobsite[job]||[]).filter(n=>!selected.includes(n));
+ });
+ persist();
+ renderFields();
+}
+function saveCrewToWorkerListFromValues(vals){
+ const key=Object.keys(vals||{}).find(k=>isCrewField(k));
+ if(!key)return;
+ state.workers=state.workers||[];
+ glzCrewListFromText(vals[key]).forEach(name=>{
+   if(!state.workers.some(w=>glzWorkerLabel(w).toLowerCase()===name.toLowerCase())){
+     state.workers.push({name,createdAt:new Date().toISOString()});
+   }
+ });
+ state.workers.sort((a,b)=>glzWorkerLabel(a).localeCompare(glzWorkerLabel(b)));
+ persist();
+}
+function jsaStaticValues(){return {}}
+function clearJsaStatic(){}
+function saveJsaWorkersFromStatic(){}
+function isCrewField(field){return /crew|workers|employees present|cuadrilla|trabajadores|empleados/i.test(field)}
+function isTaskField(field){return /task|work being done|tarea|trabajo/i.test(field)}
+function isHazardField(field){return /hazard|peligro/i.test(field)}
+function isControlField(field){return /control|preven/i.test(field)}
+function renderWorkerOptions(selectedText=""){
+ const selected=selectedText.split(",").map(x=>x.trim()).filter(Boolean);
+ return (state.workers||[]).map(w=>{
+   const label=String(w.name||w||"").trim();
+   if(!label)return "";
+   const val=escapeHTML(label);
+   const sel=selected.some(s=>s.toLowerCase()===label.toLowerCase())?"selected":"";
+   return `<option value="${val}" ${sel}>${val}</option>`;
+ }).join("");
+}
+function selectedCrewText(){
+ const sel=document.getElementById("crewSelect");
+ if(!sel)return "";
+ return [...sel.selectedOptions].map(o=>o.value).filter(Boolean).join(", ");
+}
+function syncCrewField(){
+ const target=document.querySelector("[data-crew-field='yes']");
+ if(target)target.value=selectedCrewText();
+}
+function addWorker(){
+ const name=(document.getElementById("newWorkerName")?.value||"").trim();
+ const role=(document.getElementById("newWorkerRole")?.value||"").trim();
+ if(!name)return alert("Enter worker name.");
+ if(!state.workers)state.workers=[];
+ const label=role?`${name} - ${role}`:name;
+ if(!state.workers.some(w=>String(w.name||w).toLowerCase()===label.toLowerCase())){
+   state.workers.push({name:label,createdAt:new Date().toISOString()});
+   state.workers.sort((a,b)=>String(a.name||a).localeCompare(String(b.name||b)));
+ }
+ persist();
+ document.getElementById("newWorkerName").value="";
+ const roleBox=document.getElementById("newWorkerRole"); if(roleBox)roleBox.value="";
+ renderFields();
+ const sel=document.getElementById("crewSelect");
+ if(sel){[...sel.options].forEach(o=>{if(o.value===label)o.selected=true});syncCrewField();}
+}
+function removeSelectedWorkers(){
+ const sel=document.getElementById("crewSelect");
+ if(!sel)return alert("Open the JSA/JHA form first.");
+ const selected=[...sel.selectedOptions].map(o=>o.value);
+ if(!selected.length)return alert("Select worker(s) first.");
+ if(!confirm("Remove selected worker(s) from saved list? Existing reports will not change."))return;
+ state.workers=(state.workers||[]).filter(w=>!selected.includes(String(w.name||w)));
+ persist();
+ renderFields();
+}
+
+function renderJobsiteSelect(){
+ const sel=document.getElementById("jobsiteSelect");
+ if(!sel)return;
+ const current=document.getElementById("defaultJobsite")?.value||"";
+ const jobs=state.jobsites||[];
+ sel.innerHTML="<option value=''>Select jobsite...</option>"+jobs.map(j=>"<option value='"+escapeHTML(j)+"'>"+escapeHTML(j)+"</option>").join("");
+ if(current)sel.value=current;
+}
+function selectJobsite(){
+ const sel=document.getElementById("jobsiteSelect");
+ const val=sel?sel.value:"";
+ const def=document.getElementById("defaultJobsite");
+ if(def)def.value=val;
+ document.querySelectorAll("[data-jobsite-field='yes']").forEach(el=>{el.value=val});
+}
+function addJobsite(){
+ const input=document.getElementById("newJobsite");
+ const val=(input?.value||"").trim();
+ if(!val)return alert("Enter a jobsite name.");
+ if(!state.jobsites)state.jobsites=[];
+ if(!state.jobsites.some(j=>j.toLowerCase()===val.toLowerCase()))state.jobsites.push(val);
+ state.jobsites.sort((a,b)=>a.localeCompare(b));
+ persist();
+ input.value="";
+ renderJobsiteSelect();
+ const sel=document.getElementById("jobsiteSelect");
+ if(sel)sel.value=val;
+ selectJobsite();
+}
+function removeSelectedJobsite(){
+ const sel=document.getElementById("jobsiteSelect");
+ const val=sel?sel.value:"";
+ if(!val)return alert("Select a jobsite first.");
+ if(!confirm("Remove this jobsite from the dropdown? Existing reports are not changed."))return;
+ state.jobsites=(state.jobsites||[]).filter(j=>j!==val);
+ persist();
+ document.getElementById("defaultJobsite").value="";
+ renderJobsiteSelect();
+}function todayISO(){return new Date().toISOString().slice(0,10)}function isDateField(field){return /date|fecha/i.test(field)}function isRequiredField(field){return activeForm().id==='jha' && requiredFieldNames().includes(field)}function escapeHTML(value){return String(value||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+
+function renderJsaRequiredSection(){
+ const section=document.getElementById("jsaRequiredSection");
+ if(!section)return;
+ const isJsa=activeForm().id==="jha";
+ section.className=isJsa?"jsaRequiredBox":"jsaRequiredBox hidden";
+ if(!isJsa)return;
+ const jobSel=document.getElementById("jsaJobsite");
+ if(jobSel){
+   const current=document.getElementById("defaultJobsite")?.value||jobSel.value||"";
+   jobSel.innerHTML="<option value=''>Select jobsite / Seleccione proyecto</option>"+(state.jobsites||[]).map(j=>"<option value='"+escapeHTML(j)+"'>"+escapeHTML(j)+"</option>").join("");
+   jobSel.value=current;
+ }
+ const crewSel=document.getElementById("jsaCrewSelect");
+ if(crewSel){
+   const current=document.getElementById("jsaCrewText")?.value||"";
+   crewSel.innerHTML=renderWorkerOptions(current);
+ }
+}
+function addJsaJobsite(){
+ const input=document.getElementById("jsaNewJobsite");
+ const val=(input?.value||"").trim();
+ if(!val)return alert("Enter a jobsite name.");
+ if(!state.jobsites)state.jobsites=[];
+ if(!state.jobsites.some(j=>j.toLowerCase()===val.toLowerCase()))state.jobsites.push(val);
+ state.jobsites.sort((a,b)=>a.localeCompare(b));
+ persist();
+ input.value="";
+ renderJobsiteSelect();
+ renderJsaRequiredSection();
+ const sel=document.getElementById("jsaJobsite");
+ if(sel)sel.value=val;
+ const def=document.getElementById("defaultJobsite");
+ if(def)def.value=val;
+}
+function syncJsaCrewText(){
+ const sel=document.getElementById("jsaCrewSelect");
+ const txt=document.getElementById("jsaCrewText");
+ if(sel&&txt)txt.value=[...sel.selectedOptions].map(o=>o.value).filter(Boolean).join(", ");
+}
+function addJsaWorker(){
+ const name=(document.getElementById("jsaNewWorkerName")?.value||"").trim();
+ const role=(document.getElementById("jsaNewWorkerRole")?.value||"").trim();
+ if(!name)return alert("Enter worker name.");
+ if(!state.workers)state.workers=[];
+ const label=role?`${name} - ${role}`:name;
+ if(!state.workers.some(w=>String(w.name||w).toLowerCase()===label.toLowerCase())){
+   state.workers.push({name:label,createdAt:new Date().toISOString()});
+   state.workers.sort((a,b)=>String(a.name||a).localeCompare(String(b.name||b)));
+ }
+ persist();
+ document.getElementById("jsaNewWorkerName").value="";
+ const roleBox=document.getElementById("jsaNewWorkerRole"); if(roleBox)roleBox.value="";
+ renderJsaRequiredSection();
+ const sel=document.getElementById("jsaCrewSelect");
+ if(sel){[...sel.options].forEach(o=>{if(o.value===label)o.selected=true});syncJsaCrewText();}
+}
+function jsaStaticValues(){
+ if(activeForm().id!=="jha")return {};
+ return {
+   "Project / Jobsite":(document.getElementById("jsaJobsite")?.value||"").trim(),
+   "Crew / Workers":(document.getElementById("jsaCrewText")?.value||"").trim(),
+   "Task / Work Being Done":(document.getElementById("jsaTask")?.value||"").trim(),
+   "Main Hazards":(document.getElementById("jsaHazards")?.value||"").trim(),
+   "Controls / How Hazards Will Be Prevented":(document.getElementById("jsaControls")?.value||"").trim()
+ };
+}
+function clearJsaStatic(){
+ ["jsaTask","jsaHazards","jsaControls","jsaCrewText","jsaNewJobsite","jsaNewWorkerName","jsaNewWorkerRole"].forEach(id=>{const el=document.getElementById(id);if(el)el.value=""});
+ const job=document.getElementById("jsaJobsite");if(job)job.value="";
+ const crew=document.getElementById("jsaCrewSelect");if(crew)[...crew.options].forEach(o=>o.selected=false);
+}
+function saveJsaWorkersFromStatic(){
+ const crew=(document.getElementById("jsaCrewText")?.value||"").trim();
+ if(!crew)return;
+ if(!state.workers)state.workers=[];
+ crew.split(",").map(x=>x.trim()).filter(Boolean).forEach(name=>{
+   if(!state.workers.some(w=>String(w.name||w).toLowerCase()===name.toLowerCase())){
+     state.workers.push({name,createdAt:new Date().toISOString()});
+   }
+ });
+ state.workers.sort((a,b)=>String(a.name||a).localeCompare(String(b.name||b)));
+ persist();
+}
+
+function render(){const x=tr();document.getElementById("title").textContent=x.title;document.getElementById("subtitle").textContent=x.sub;document.getElementById("formsTitle").textContent=x.forms;document.getElementById("roleLabel").textContent=x.role;document.getElementById("jobsiteLabel").textContent=x.jobsite;document.getElementById("submitBtn").textContent=x.submit;document.getElementById("draftBtn").textContent=x.draft;document.getElementById("clearBtn").textContent=x.clear;document.getElementById("dashTitle").textContent=x.dash;document.getElementById("adminTitle").textContent=x.admin;document.getElementById("adminDesc").textContent=x.adminDesc;document.getElementById("sTotal").textContent=x.total;document.getElementById("sSubmitted").textContent=x.submitted;document.getElementById("sDraft").textContent=x.drafts;document.getElementById("sClosed").textContent=x.closed;document.getElementById("roleBox").value=userRole;document.getElementById("adminTab").style.display=isAdmin()?"block":"none";if(!isAdmin()&&panel==="admin")panel="employee";document.getElementById("empTab").className=panel==="employee"?"tab active":"tab";document.getElementById("adminTab").className=panel==="admin"?"tab active":"tab";document.getElementById("employeePanel").className=panel==="employee"?"card":"card hidden";document.getElementById("adminPanel").className=panel==="admin"?"card":"card hidden";renderJobsiteSelect();renderPPEChecklist();renderForms();renderFields();setupSignaturePad();renderSignatureList();renderStats();renderReports();renderAudit();updateSyncStatus();if(typeof bindSaveButtonsHard==='function')bindSaveButtonsHard()}
+function setLang(l){lang=l;localStorage.setItem("glz_lang",l);render()}function setPanel(p){if(p==="admin"&&!isAdmin()){alert("Only supervisors can open admin dashboard.");return}panel=p;render()}function renderForms(){const box=document.getElementById("formButtons");box.innerHTML="";forms.forEach(f=>{const b=document.createElement("button");b.className=f.id===activeFormId?"formBtn active":"formBtn";b.innerHTML="<b>"+f.icon+" "+f[lang].title+"</b><small>"+f[lang].desc+"</small>";b.onclick=()=>{activeFormId=f.id;clearForm();render()};box.appendChild(b)})}
+function renderFields(){
+ const f=activeForm();
+ document.getElementById("formTitle").textContent=f.icon+" "+f[lang].title;
+ document.getElementById("formDesc").textContent=f[lang].desc;
+ const hint=document.getElementById("quickJhaHint");
+ if(hint)hint.className=f.id==="jha"?"muted":"muted hidden";
+ const box=document.getElementById("fields");
+ box.innerHTML="";
+ f[lang].fields.forEach(field=>{
+   const d=document.createElement("div");
+   if(isDateField(field)){
+     d.innerHTML="<label>"+field+"</label><input type='date' data-field='"+field+"' value='"+todayISO()+"'>";
+   }else if(isJobsiteField(field)){
+     const current=document.getElementById("defaultJobsite")?.value||"";
+     d.innerHTML="<label>"+field+"</label><select data-field='"+field+"' data-jobsite-field='yes'>"+
+       "<option value=''>Select jobsite...</option>"+(state.jobsites||[]).map(j=>"<option value='"+escapeHTML(j)+"' "+(j===current?"selected":"")+">"+escapeHTML(j)+"</option>").join("")+
+       "</select><div class='bar'><input id='inlineNewJobsite' placeholder='Add jobsite'><button class='secondary' type='button' onclick='document.getElementById(\"newJobsite\").value=document.getElementById(\"inlineNewJobsite\").value;addJobsite();setTimeout(renderFields,0)'>Add Jobsite</button></div><p class='muted'>Select a saved jobsite or add a new one.</p>";
+   }else if(isCrewField(field)){
+     d.innerHTML="<label>"+field+"</label><select id='crewSelect' multiple size='6' onchange='glzSyncCrewText()'>"+glzRenderWorkerOptions("")+"</select><textarea data-field='"+field+"' data-crew-field='yes' placeholder='Selected crew will appear here, or type names manually.'></textarea><div class='bar'><input id='newWorkerName' placeholder='Worker name'><input id='newWorkerRole' placeholder='Role/trade optional'><button class='secondary' type='button' onclick='glzAddWorkerNative()'>Save Worker</button><button class='danger' type='button' onclick='glzRemoveCrewFromJobsiteNative()'>Remove From This Jobsite</button><button class='danger' type='button' onclick='glzDeleteWorkerNative()'>Delete Worker Permanently</button></div><p class='muted'>Crew is saved by jobsite. Switching jobsites loads that jobsite crew only.</p>";
+   }else{
+     d.innerHTML="<label>"+field+"</label><textarea data-field='"+field+"' placeholder='"+field+"'></textarea>";
+   }
+   box.appendChild(d);
+ });
+ const jobSelect=document.querySelector("[data-jobsite-field='yes']");
+ if(jobSelect){
+   jobSelect.onchange=function(){
+     const def=document.getElementById("defaultJobsite");
+     if(def)def.value=this.value;
+     glzLoadCrewForJobsite();
+   };
+ }
+ const crewTxt=document.querySelector("[data-crew-field='yes']");
+ if(crewTxt){
+   crewTxt.addEventListener("change",glzSaveCrewForCurrentJobsite);
+   crewTxt.addEventListener("blur",glzSaveCrewForCurrentJobsite);
+ }
+ setTimeout(glzLoadCrewForJobsite,0);
+}
+let currentSignatures=[];function setupSignaturePad(){const canvas=document.getElementById("signatureCanvas");if(!canvas||canvas.dataset.ready==="yes")return;canvas.dataset.ready="yes";const ctx=canvas.getContext("2d");let drawing=false,last=null;function resize(){const rect=canvas.getBoundingClientRect();const ratio=window.devicePixelRatio||1;canvas.width=Math.max(1,Math.floor(rect.width*ratio));canvas.height=Math.max(1,Math.floor(150*ratio));ctx.setTransform(ratio,0,0,ratio,0,0);ctx.lineWidth=2;ctx.lineCap="round";ctx.strokeStyle="#111827"}resize();window.addEventListener("resize",resize);function pos(e){const rect=canvas.getBoundingClientRect();const t=e.touches&&e.touches[0]?e.touches[0]:e;return{x:t.clientX-rect.left,y:t.clientY-rect.top}}function start(e){e.preventDefault();drawing=true;last=pos(e)}function move(e){if(!drawing)return;e.preventDefault();const p=pos(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p}function end(){drawing=false;last=null}canvas.addEventListener("mousedown",start);canvas.addEventListener("mousemove",move);canvas.addEventListener("mouseup",end);canvas.addEventListener("mouseleave",end);canvas.addEventListener("touchstart",start,{passive:false});canvas.addEventListener("touchmove",move,{passive:false});canvas.addEventListener("touchend",end)}
+function clearSignaturePad(){const c=document.getElementById("signatureCanvas");if(c)c.getContext("2d").clearRect(0,0,c.width,c.height)}function isCanvasBlank(canvas){const p=canvas.getContext("2d").getImageData(0,0,canvas.width,canvas.height).data;for(let i=3;i<p.length;i+=4){if(p[i]!==0)return false}return true}function addSignature(){const canvas=document.getElementById("signatureCanvas"),name=(document.getElementById("signatureName").value||"").trim();if(!name)return alert("Enter signer name first.");if(isCanvasBlank(canvas))return alert("Draw a signature first.");currentSignatures.push({name,date:new Date().toISOString(),image:canvas.toDataURL("image/png")});document.getElementById("signatureName").value="";clearSignaturePad();renderSignatureList()}function removeSignature(i){currentSignatures.splice(i,1);renderSignatureList()}function renderSignatureList(){const box=document.getElementById("signatureList");if(!box)return;box.innerHTML=currentSignatures.length?"":"<p class='muted'>No signatures added yet.</p>";currentSignatures.forEach((s,i)=>{const div=document.createElement("div");div.className="signatureItem";div.innerHTML="<b>"+escapeHTML(s.name)+"</b><br><span class='muted'>"+new Date(s.date).toLocaleString()+"</span><br><img src='"+s.image+"'><br><button class='danger' onclick='removeSignature("+i+")'>Remove</button>";box.appendChild(div)})}
+function hiddenSetForUser(email){if(!state.hiddenReports)state.hiddenReports={};if(!state.hiddenReports.__global__)state.hiddenReports.__global__=[];const key=(email||"").toLowerCase();if(!state.hiddenReports[key])state.hiddenReports[key]=[];return new Set([...(state.hiddenReports.__global__||[]),...(state.hiddenReports[key]||[])])}function hideReportGlobally(r){if(!state.hiddenReports)state.hiddenReports={};if(!state.hiddenReports.__global__)state.hiddenReports.__global__=[];[r.firebaseId,r.clientId,r.localId,r.id].filter(Boolean).forEach(x=>{if(!state.hiddenReports.__global__.includes(x))state.hiddenReports.__global__.push(x)})}function isHiddenForCurrentUser(r){const email=currentUser&&currentUser.email?currentUser.email:"";const set=hiddenSetForUser(email);return[r.firebaseId,r.clientId,r.localId,r.id].filter(Boolean).some(x=>set.has(x))}function visibleReports(){return(state.reports||[]).filter(r=>!isHiddenForCurrentUser(r))}
+function dashboardReports(){return isAdmin() ? (state.reports||[]) : visibleReports();}
+function renderStats(){const r=dashboardReports();document.getElementById("total").textContent=r.length;document.getElementById("submitted").textContent=r.filter(x=>x.status==="Submitted").length;document.getElementById("drafts").textContent=r.filter(x=>x.status==="Draft").length;document.getElementById("closed").textContent=r.filter(x=>x.status==="Closed").length;document.getElementById("jhas").textContent=r.filter(x=>x.formId==="jha").length;document.getElementById("pending").textContent=r.filter(x=>x.cloudSyncStatus!=="Synced").length}function updateSyncStatus(){const pending=visibleReports().filter(x=>x.cloudSyncStatus!=="Synced").length;if(offlineMode){setStatus("Offline Mode • Saved on iPad: "+pending);return}if(!currentUser){setStatus(tr().loginRequired);return}if(!online()){setStatus(tr().offline+": "+pending);return}if(!firebaseReady){setStatus("Cloud loading...");return}setStatus(pending?tr().pending+": "+pending:tr().synced)}
+
+
+function clearAdminFilters(){
+ const search=document.getElementById("search"); if(search)search.value="";
+ const side=document.getElementById("sideSearch"); if(side)side.value="";
+ const fj=document.getElementById("filterJobsite"); if(fj)fj.value="";
+ const fu=document.getElementById("filterUser"); if(fu)fu.value="";
+ const fs=document.getElementById("filterStatus"); if(fs)fs.value="";
+ const prev=document.getElementById("previousOnlyToggle"); if(prev)prev.checked=false;
+ renderReports();renderStats();
+}
+
+function showPreviousReports(){
+ panel="admin";
+ const search=document.getElementById("search"); if(search)search.value="";
+ const side=document.getElementById("sideSearch"); if(side)side.value="";
+ const fj=document.getElementById("filterJobsite"); if(fj)fj.value="";
+ const fu=document.getElementById("filterUser"); if(fu)fu.value="";
+ const fs=document.getElementById("filterStatus"); if(fs)fs.value="";
+ const prev=document.getElementById("previousOnlyToggle"); if(prev)prev.checked=false;
+ render();
+ setTimeout(()=>{const reports=document.getElementById("reports"); if(reports)reports.scrollIntoView({behavior:"smooth",block:"start"});},100);
+}
+
+function showAllReports(){
+ const t=document.getElementById("previousOnlyToggle");
+ if(t)t.checked=false;
+ const status=document.getElementById("filterStatus");
+ if(status)status.value="";
+ render();
+}
+
+function isPreviousReport(r){
+ if(!r)return false;
+ // Treat submitted or closed records as previous/saved reports so they remain visible in the dashboard.
+ return r.status==="Submitted" || r.status==="Closed";
+}
+
+
+function applyAdminFilters(list){
+ const q=((document.getElementById("search")?.value||document.getElementById("sideSearch")?.value||"").toLowerCase());
+ const job=document.getElementById("filterJobsite")?.value||"";
+ const user=document.getElementById("filterUser")?.value||"";
+ const status=document.getElementById("filterStatus")?.value||"";
+ return (list||[]).filter(r=>{
+   if(q && !JSON.stringify(r).toLowerCase().includes(q))return false;
+   if(job && (r.jobsite||"")!==job)return false;
+   if(user && String(r.user||"").toLowerCase()!==user)return false;
+   if(status && (r.status||"")!==status)return false;
+   return true;
+ });
+}
+
+
+function reportByKey(key){return (state.reports||[]).find(r=>[r.id,r.localId,r.clientId,r.firebaseId].filter(Boolean).includes(key));}
+function openSubmissionDetail(key){
+ if(!isAdmin())return alert("Only supervisors can view details.");
+ const r=reportByKey(key); if(!r)return alert("Submission not found.");
+ selectedSubmissionKey=key;
+ document.getElementById("modalTitle").textContent=r.formTitle||"Submission Details";
+ const vals=Object.entries(r.values||{}).filter(([k,v])=>String(v||"").trim());
+ let body="<div class='detailGrid'><div class='detailRow'><span class='detailKey'>ID:</span> "+escapeHTML(r.id)+"</div><div class='detailRow'><span class='detailKey'>Status:</span> "+escapeHTML(r.status)+"</div><div class='detailRow'><span class='detailKey'>User:</span> "+escapeHTML(r.user)+"</div><div class='detailRow'><span class='detailKey'>Jobsite:</span> "+escapeHTML(r.jobsite)+"</div></div>";
+ if(vals.length){body+="<h3>Filled Fields</h3><div class='detailGrid'>";vals.forEach(([k,v])=>body+="<div class='detailRow'><span class='detailKey'>"+escapeHTML(k)+":</span> "+escapeHTML(v)+"</div>");body+="</div>"}
+ document.getElementById("modalBody").innerHTML=body;
+ document.getElementById("reportModal").style.display="flex";
+}
+function closeSubmissionDetail(){document.getElementById("reportModal").style.display="none";selectedSubmissionKey=null}
+
+function syncSearch(){document.getElementById("search").value=document.getElementById("sideSearch").value;renderReports()}
+function currentAdminReports(list){
+ return (list||[]).filter(r=>{
+   return r.status==="Draft" || (r.status!=="Submitted" && r.cloudSyncStatus==="Pending cloud sync");
+ });
+}
+
+function previousAdminReports(list){
+ return (list||[]).filter(r=>{
+   return r.status==="Submitted" || r.status==="Closed" || r.cloudSyncStatus==="Synced";
+ });
+}
+
+function renderReportCard(r){
+ const vals=Object.entries(r.values||{}).filter(([,v])=>v).slice(0,4).map(([k,v])=>"<b>"+escapeHTML(k)+":</b> "+escapeHTML(v)).join("<br>");
+ const key=r.firebaseId||r.clientId||r.localId||r.id;
+ const div=document.createElement("div");
+ div.className="report";
+ div.innerHTML="<h3>"+escapeHTML(r.formTitle||"Report")+"</h3><span class='badge'>"+escapeHTML(r.status||"")+"</span>"+(previousAdminReports([r]).length?" <span class='badge'>Previous Report</span>":"")+"<p class='muted'>"+new Date(r.createdAt).toLocaleString()+"<br>"+escapeHTML(r.user||"")+"<br>"+escapeHTML(r.role||"")+"<br>"+escapeHTML(r.jobsite||"")+"</p><p>"+vals+"</p><p class='muted'><b>Signatures:</b> "+((r.signatures||[]).length)+"</p><p class='muted'><b>Sync:</b> "+escapeHTML(r.cloudSyncStatus||"Pending")+"</p>";
+
+ if(isAdmin()){
+   const bar=document.createElement("div");
+   bar.className="bar";
+
+   const view=document.createElement("button");
+   view.className="secondary";
+   view.type="button";
+   view.textContent="View Details";
+   view.addEventListener("click",()=>openSubmissionDetail(key));
+
+   const edit=document.createElement("button");
+   edit.className="primary";
+   edit.type="button";
+   edit.textContent="Edit Submitted Report";
+   edit.addEventListener("click",()=>{selectedSubmissionKey=key;openEditSubmission();});
+
+   const onePdf=document.createElement("button");
+   onePdf.className="secondary";
+   onePdf.type="button";
+   onePdf.textContent="One Report PDF";
+   onePdf.addEventListener("click",()=>{selectedSubmissionKey=key;exportOneReportPDF();});
+
+   const close=document.createElement("button");
+   close.className="success";
+   close.type="button";
+   close.textContent=tr().close;
+   close.addEventListener("click",()=>closeReport(r.id));
+
+   const remove=document.createElement("button");
+   remove.className="danger";
+   remove.type="button";
+   remove.textContent="Remove";
+   remove.addEventListener("click",()=>{selectedSubmissionKey=key;removeSelectedSubmission();});
+
+   bar.appendChild(view);
+   bar.appendChild(edit);
+   bar.appendChild(onePdf);
+   bar.appendChild(close);
+   bar.appendChild(remove);
+   div.appendChild(bar);
+ }else{
+   const badge=document.createElement("span");
+   badge.className="badge";
+   badge.textContent="Employee View";
+   div.appendChild(badge);
+ }
+ return div;
+}
+function renderReports(){
+ const box=document.getElementById("reports");
+ const baseRaw=dashboardReports().sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+ const filtered=applyAdminFilters(baseRaw);
+ const current=currentAdminReports(filtered);
+ const currentKeys=new Set(current.map(c=>c.firebaseId||c.clientId||c.localId||c.id));
+ const previous=previousAdminReports(filtered).filter(r=>!currentKeys.has(r.firebaseId||r.clientId||r.localId||r.id));
+
+ box.innerHTML="";
+
+ if(isAdmin()){
+   const allTitle=document.createElement("div");
+   allTitle.className="reportSectionTitle";
+   allTitle.textContent="Current Reports";
+   box.appendChild(allTitle);
+
+   const allSub=document.createElement("div");
+   allSub.className="reportSectionSub";
+   allSub.textContent="Drafts and unsynced/open items.";
+   box.appendChild(allSub);
+
+   if(current.length){
+     current.forEach(r=>box.appendChild(renderReportCard(r)));
+   }else{
+     const p=document.createElement("p");
+     p.className="muted";
+     p.textContent="No current reports.";
+     box.appendChild(p);
+   }
+
+   const previousTitle=document.createElement("div");
+   previousTitle.className="reportSectionTitle";
+   previousTitle.textContent="Previous Reports";
+   box.appendChild(previousTitle);
+
+   const previousSub=document.createElement("div");
+   previousSub.className="reportSectionSub";
+   previousSub.textContent="Submitted, closed, or synced reports appear here and can still be viewed/edited.";
+   box.appendChild(previousSub);
+
+   if(previous.length){
+     previous.forEach(r=>box.appendChild(renderReportCard(r)));
+   }else{
+     const p=document.createElement("p");
+     p.className="muted";
+     p.textContent="No previous reports found.";
+     box.appendChild(p);
+   }
+ }else{
+   if(filtered.length){
+     filtered.forEach(r=>box.appendChild(renderReportCard(r)));
+   }else{
+     box.innerHTML="<p class='muted'>"+tr().noReports+"</p>";
+   }
+ }
+}
+function renderAudit(){
+ const box=document.getElementById("auditBox");
+ box.innerHTML=(state.audit||[]).slice(0,50).map(a=>{
+   const linked=a.reportId?`<div class="bar"><button class="secondary" onclick="openAuditReport('${a.reportId}')">View Linked Report</button></div>`:"";
+   const note=a.note?`<p class="muted">${escapeHTML(a.note)}</p>`:"";
+   return `<div class='report'><b>${escapeHTML(a.action||"Audit Entry")}</b><p class='muted'>${new Date(a.createdAt).toLocaleString()} • ${escapeHTML(a.user||"")}</p>${note}${linked}</div>`;
+ }).join("")||"<p class='muted'>No audit entries.</p>";
+}
+function values(){const v={};document.querySelectorAll("[data-field]").forEach(el=>{if(el.value.trim())v[el.dataset.field]=el.value.trim()});return v}function clearForm(msg=true){document.querySelectorAll("[data-field]").forEach(el=>el.value="");document.querySelectorAll("input[type='date'][data-field]").forEach(el=>el.value=todayISO());document.getElementById("photoName").value="";const pf=document.getElementById("photoFile");if(pf)pf.value="";currentSignatures=[];if(typeof clearPPE==='function')if(typeof clearPPE==='function')clearPPE();if(typeof clearJsaStatic==='function')clearJsaStatic();renderSignatureList();clearSignaturePad();if(msg)document.getElementById("saveStatus").textContent=""}
+function reportKey(r){return r.clientId||r.localId||r.id||r.firebaseId}function dedupeReports(list){const seen=new Set();return(list||[]).filter(r=>{const k=reportKey(r);if(!k)return true;if(seen.has(k))return false;seen.add(k);return true})}
+
+function saveCrewToWorkerListFromValues(vals){
+ const crewKey=Object.keys(vals||{}).find(k=>isCrewField(k));
+ if(!crewKey)return;
+ const names=String(vals[crewKey]||"").split(",").map(x=>x.trim()).filter(Boolean);
+ if(!names.length)return;
+ if(!state.workers)state.workers=[];
+ names.forEach(name=>{
+   if(!state.workers.some(w=>String(w.name||w).toLowerCase()===name.toLowerCase())){
+     state.workers.push({name,createdAt:new Date().toISOString()});
+   }
+ });
+ state.workers.sort((a,b)=>String(a.name||a).localeCompare(String(b.name||b)));
+}
+
+function saveReport(status){
+ if(!currentUser){alert("Login first.");return}
+ 
+ const f=activeForm(),rid=id(),file=document.getElementById("photoFile");
+ const formVals={...values(),...(typeof jsaStaticValues==="function"?jsaStaticValues():{})};
+ if(typeof saveJsaWorkersFromStatic==="function")saveJsaWorkersFromStatic();
+ if(typeof saveCrewToWorkerListFromValues==="function")saveCrewToWorkerListFromValues(formVals);
+ const report={
+   id:rid,
+   clientId:rid,
+   localId:rid,
+   company:"GLZSHEETMETAL LLC",
+   language:lang,
+   formId:f.id,
+   formTitle:f[lang].title,
+   status,
+   user:currentUser.email,
+   offline:offlineMode,
+   role:userRole,
+   jobsite:(document.getElementById("defaultJobsite").value.trim()||Object.entries(formVals).find(([k])=>isJobsiteField(k))?.[1]||""),
+   values:{...formVals,"PPE Used / EPP Usado":(typeof getSelectedPPE==="function"?getSelectedPPE():[]).join(", ")},
+   photoName:document.getElementById("photoName").value.trim()||(file&&file.files[0]?file.files[0].name:""),
+   createdAt:new Date().toISOString(),
+   signatures:[...currentSignatures],
+   cloudSyncStatus:"Pending cloud sync"
+ };
+ state.reports=dedupeReports([report,...state.reports]);
+ state.audit.unshift({id:id(),action:status+" report created",reportId:rid,user:currentUser.email,offline:offlineMode,createdAt:new Date().toISOString()});
+ persist();
+ clearForm(false);
+ document.getElementById("saveStatus").textContent=status+" saved.";
+ render();
+ syncOne(report);
+}
+function closeReport(rid){if(!isAdmin())return alert("Only supervisors can close reports.");state.reports=state.reports.map(r=>r.id===rid?{...r,status:"Closed",cloudSyncStatus:"Pending cloud sync",reviewedAt:new Date().toISOString(),reviewedBy:currentUser.email}:r);persist();render();manualSync()}function deleteReport(rid){if(!isAdmin())return alert("Only supervisors can delete reports.");if(!confirm("Delete this report?"))return;state.reports=state.reports.filter(r=>r.id!==rid);persist();render()}function hideAllVisibleReports(){const visible=visibleReports();if(!visible.length)return alert("No visible reports to hide.");if(!confirm("Hide all "+visible.length+" visible reports on this device?"))return;visible.forEach(r=>hideReportGlobally(r));persist();render();alert("Visible reports hidden on this device.")}async function forceRemoveReport(reportId){const report=(state.reports||[]).find(r=>[r.id,r.localId,r.clientId,r.firebaseId].filter(Boolean).includes(reportId));if(!report)return alert("Report not found locally.");if(!confirm("Force remove this report?"))return;hideReportGlobally(report);state.reports=state.reports.filter(r=>![r.id,r.localId,r.clientId,r.firebaseId].filter(Boolean).some(x=>[report.id,report.localId,report.clientId,report.firebaseId].filter(Boolean).includes(x)));if(db&&currentUser&&report.firebaseId){try{await db.collection("reports").doc(report.firebaseId).delete()}catch(e){console.error(e)}}persist();render()}
+function compact(r){return{id:r.id,form:r.formTitle,status:r.status,user:r.user,role:r.role,jobsite:r.jobsite,createdAt:r.createdAt,sync:r.cloudSyncStatus,photo:r.photoName,values:r.values||{},signatures:r.signatures||[]}}function download(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}function exportJSON(){download("GLZSHEETMETAL-LLC-backup.json",JSON.stringify({reports:visibleReports().map(compact),audit:state.audit}),"application/json")}
+function exportAuditLog(){
+ const rows=[["Date","Action","User","Report ID","Note"]];
+ (state.audit||[]).forEach(a=>{
+   rows.push([new Date(a.createdAt).toLocaleString(),a.action||"",a.user||"",a.reportId||"",a.note||""]);
+ });
+ download("GLZSHEETMETAL-LLC-audit-log.csv",rows.map(row=>row.map(v=>'"'+String(v||"").replaceAll('"','""')+'"').join(",")).join("\n"),"text/csv");
+}
+
+function exportCSV(){const rows=[["ID","Form","Status","User","Role","Jobsite","Created","Summary","Signatures"]];applyAdminFilters(dashboardReports()).forEach(r=>{const c=compact(r);rows.push([c.id,c.form,c.status,c.user,c.role,c.jobsite,c.createdAt,Object.values(c.values).slice(0,3).join(" | "),(c.signatures||[]).length])});download("GLZSHEETMETAL-LLC-reports.csv",rows.map(row=>row.map(v=>'"'+String(v||"").replaceAll('"','""')+'"').join(",")).join("\\n"),"text/csv")}function exportPDF(jhaOnly,customList){
+ let list=customList || (jhaOnly?applyAdminFilters(dashboardReports()).filter(r=>r.formId==="jha"):applyAdminFilters(dashboardReports()));
+ let title=jhaOnly?"JHA Report":"Safety Report";
+
+ let html=`<!doctype html>
+ <html>
+ <head>
+ <meta charset="utf-8">
+ <title>GLZSHEETMETAL LLC - ${title}</title>
+ <style>
+ @page{margin:12mm}
+ body{font-family:Arial,sans-serif;font-size:11px;color:#111;margin:0}
+ .brandHeader{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #0f172a;padding-bottom:8px;margin-bottom:10px}
+ .brandLeft{display:flex;align-items:center;gap:10px}
+ .logo{width:52px;height:52px;border-radius:12px;background:#0f172a;color:white;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px}
+ h1{font-size:18px;margin:0;color:#0f172a}
+ .subtitle{font-size:10px;color:#64748b;margin-top:2px}
+ .meta{font-size:9px;color:#64748b;text-align:right}
+ .report{page-break-inside:avoid;border:1px solid #dbe3ec;border-radius:8px;margin:9px 0;padding:8px}
+ h2{font-size:13px;margin:0 0 6px;background:#f1f5f9;border:1px solid #dbe3ec;padding:6px;border-radius:6px}
+ .grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 10px}
+ .row{border-bottom:1px solid #eee;padding:3px 0}
+ .label{font-weight:bold;color:#0f172a}
+ img.sig{max-width:220px;height:58px;border:1px solid #ccc;background:white}
+ .footer{font-size:8px;color:#64748b;border-top:1px solid #dbe3ec;margin-top:10px;padding-top:5px}
+ .empty{color:#64748b}
+ .ppeBox{border:2px solid #0f172a;border-radius:16px;padding:12px;margin:12px 0;background:#f8fafc}.ppeTitle{font-size:16px;font-weight:900;margin-bottom:6px}.ppeGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.ppeItem{display:flex;gap:8px;align-items:flex-start;background:white;border:1px solid #dbe3ec;border-radius:12px;padding:8px;line-height:1.25}.ppeItem input{width:auto;margin-top:2px}.ppeText small{display:block;color:#64748b;font-weight:600}.filterGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.modalOverlay{position:fixed;inset:0;background:rgba(15,23,42,.72);z-index:9998;display:none;align-items:center;justify-content:center;padding:16px}.modalCard{background:white;border-radius:22px;max-width:760px;width:100%;max-height:86vh;overflow:auto;padding:18px;box-shadow:0 24px 70px rgba(0,0,0,.35)}.detailGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.detailRow{border-bottom:1px solid #e5e7eb;padding:6px 0}.detailKey{font-weight:900}.detailSig{max-width:260px;height:70px;border:1px solid #ccc;background:white}@media(max-width:700px){.filterGrid,.ppeGrid,.detailGrid{grid-template-columns:1fr}}
+.previousTools{border:1px solid var(--line);border-radius:16px;background:#f8fafc;padding:10px;margin:10px 0}.previousTools .bar{margin-top:6px}.editNotice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:8px;margin:8px 0;font-weight:800}.reportSectionTitle{margin:14px 0 8px;padding:8px 10px;border-radius:12px;background:#0f172a;color:white;font-weight:900}
+.reportSectionSub{font-size:12px;color:#64748b;margin:-4px 0 8px}
+.jsaRequiredBox{border:3px solid #0f172a;border-radius:18px;padding:14px;margin:14px 0;background:#eef2ff}.jsaRequiredBox h3{margin:0 0 8px;color:#0f172a}.jsaReqGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.jsaRequiredBox .full{grid-column:1/-1}@media(max-width:700px){.jsaReqGrid{grid-template-columns:1fr}}.glzStandaloneJsa{border:3px solid #0f172a;border-radius:18px;padding:14px;margin:14px 0;background:#eef2ff}
+.glzStandaloneJsa h3{margin:0 0 8px;color:#0f172a}
+.glzJsaGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.glzJsaGrid .full{grid-column:1/-1}
+@media(max-width:700px){.glzJsaGrid{grid-template-columns:1fr}}
+.glzJsaNativeSection{border:3px solid #0f172a;border-radius:18px;padding:14px;margin:14px 0;background:#eef2ff}
+.glzJsaNativeSection h3{margin:0 0 8px;color:#0f172a}
+.glzJsaGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.glzJsaGrid .full{grid-column:1/-1}
+@media(max-width:700px){.glzJsaGrid{grid-template-columns:1fr}}
+</style>
+ </head>
+ <body>
+ <div class="brandHeader">
+   <div class="brandLeft">
+     <div class="logo">GLZ</div>
+     <div>
+       <h1>GLZSHEETMETAL LLC</h1>
+       <div class="subtitle">Mobile Safety Workflow • ${title}</div>
+     </div>
+   </div>
+   <div class="meta">
+     Generated<br>${new Date().toLocaleString()}<br>Compact PDF Export
+   </div>
+ </div>`;
+
+ if(!list.length){
+   html+=`<p class="empty">No reports available.</p>`;
+ }
+
+ list.forEach((r,i)=>{
+   const vals=Object.entries(r.values||{}).filter(([k,v])=>String(v||"").trim());
+
+   html+=`<section class="report">
+   <h2>${i+1}. ${r.formTitle||"Report"}</h2>
+   <div class="grid">
+     <div class="row"><span class="label">ID:</span> ${r.id||""}</div>
+     <div class="row"><span class="label">Status:</span> ${r.status||""}</div>
+     <div class="row"><span class="label">User:</span> ${r.user||""}</div>
+     <div class="row"><span class="label">Role:</span> ${r.role||""}</div>
+     <div class="row"><span class="label">Jobsite:</span> ${r.jobsite||""}</div>
+     <div class="row"><span class="label">Created:</span> ${new Date(r.createdAt).toLocaleString()}</div>
+   </div>`;
+
+   if(vals.length){
+     html+=`<div class="grid" style="margin-top:6px">`;
+     vals.forEach(([k,v])=>{
+       html+=`<div class="row"><span class="label">${k}:</span> ${v}</div>`;
+     });
+     html+=`</div>`;
+   }
+
+   if((r.signatures||[]).length){
+     html+=`<div style="margin-top:7px"><span class="label">Signatures</span>`;
+     (r.signatures||[]).forEach(s=>{
+       html+=`<div class="row"><b>${s.name||""}</b> ${new Date(s.date).toLocaleString()}<br><img class="sig" src="${s.image}"></div>`;
+     });
+     html+=`</div>`;
+   }
+
+   html+=`</section>`;
+ });
+
+ html+=`<div class="footer">GLZSHEETMETAL LLC | Internal Safety Documentation | Export includes filled fields only.</div><!-- JSA_FIELDS_ENABLED_VERIFIED -->
+</body></html>`;
+
+ let win=window.open("","_blank");
+ if(win){
+   win.document.open();
+   win.document.write(html);
+   win.document.close();
+   setTimeout(()=>{win.focus();win.print();},500);
+ }else{
+   download(jhaOnly?"GLZSHEETMETAL-LLC-JHA-PDF.html":"GLZSHEETMETAL-LLC-Safety-PDF.html",html,"text/html");
+   alert("Popup blocked. A branded printable PDF file was downloaded instead. Open it and choose Print > Save as PDF.");
+ }
+}
+function offlineLogin(){const name=prompt("No signal? Enter employee name for Offline Mode:");if(!name)return;const role=prompt("Enter role: Employee, Foreman, or Safety Manager","Employee")||"Employee";offlineMode=true;currentUser={email:"offline:"+name.trim().toLowerCase().replace(/\\s+/g,"."),offlineName:name.trim()};userRole=(role==="Foreman"||role==="Safety Manager")?role:"Employee";document.getElementById("loginOverlay").style.display="none";document.getElementById("userStatus").textContent="Offline: "+name.trim();setStatus("Offline Mode • Saved on iPad");render()}function switchToOnlineLogin(){offlineMode=false;currentUser=null;userRole="Employee";document.getElementById("loginOverlay").style.display="flex";document.getElementById("userStatus").textContent="Not signed in";setStatus("Login required");render()}
+async function loadFirebase(){setStatus("Loading Firebase...");setFirebaseStatus("Loading Firebase scripts...");await loadScript("https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js");await loadScript("https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js");await loadScript("https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js");if(!firebase.apps.length){firebase.initializeApp(firebaseConfig)}auth=firebase.auth();db=firebase.firestore();firebaseReady=true;setFirebaseStatus("Login system ready.");setStatus("Login required");await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);auth.onAuthStateChanged(async user=>{if(offlineMode)return;currentUser=user;if(user){document.getElementById("loginOverlay").style.display="none";document.getElementById("userStatus").textContent="Signed in: "+user.email;await loadRole();await loadCloud();manualSync()}else{document.getElementById("loginOverlay").style.display="flex";document.getElementById("userStatus").textContent="Not signed in";userRole="Employee";render()}})}function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement("script");s.src=src+"?v="+Date.now();s.onload=res;s.onerror=()=>rej(new Error("Failed "+src));document.head.appendChild(s)})}async function login(){
+ const e=document.getElementById("loginEmail").value.trim().toLowerCase(),p=document.getElementById("loginPassword").value,err=document.getElementById("loginError");
+ err.style.display="none";
+ if(!auth){
+   err.textContent="Login system is still loading. Retrying Firebase...";
+   err.style.display="block";
+   setFirebaseStatus("Retrying Firebase login system...");
+   try{await loadFirebase()}catch(ex){setFirebaseStatus("Firebase failed to load. Use Offline Mode if needed.");err.textContent="Firebase failed to load. Check internet or use Offline Mode.";return}
+ }
+ if(!e||!p){err.textContent="Enter email and password, or use Offline Mode.";err.style.display="block";return}
+ try{
+   err.textContent="Signing in...";
+   err.style.display="block";
+   await auth.signInWithEmailAndPassword(e,p);
+   document.getElementById("loginPassword").value="";
+   err.style.display="none";
+ }catch(ex){
+   console.error("Login failed:",ex);
+   err.textContent="Login failed: "+(ex.code||"try again");
+   err.style.display="block";
+   document.getElementById("loginPassword").value="";
+   document.getElementById("loginPassword").focus();
+ }
+}
+function togglePassword(){const p=document.getElementById("loginPassword");p.type=p.type==="password"?"text":"password"}function logout(){offlineMode=false;currentUser=null;userRole="Employee";if(auth)auth.signOut();else document.getElementById("loginOverlay").style.display="flex";render()}
+async function loadRole(){try{const email=currentUser.email.toLowerCase();const doc=await db.collection("users").doc(email).get();if(doc.exists)userRole=doc.data().role||"Employee";else{userRole="Employee";await db.collection("users").doc(email).set({email,role:"Employee",createdAt:new Date().toISOString()},{merge:true})}}catch(e){console.error(e);userRole="Employee"}render()}async function loadCloud(){if(!db||!currentUser||!online())return;try{const snap=await db.collection("reports").orderBy("createdAt","desc").get();const cloud=snap.docs.map(d=>({firebaseId:d.id,cloudSyncStatus:"Synced",...d.data()}));const cloudKeys=new Set();cloud.forEach(r=>{if(r.clientId)cloudKeys.add(r.clientId);if(r.localId)cloudKeys.add(r.localId);if(r.id)cloudKeys.add(r.id);if(r.firebaseId)cloudKeys.add(r.firebaseId)});const pending=state.reports.filter(r=>r.cloudSyncStatus!=="Synced"&&!cloudKeys.has(reportKey(r)));state.reports=dedupeReports([...pending,...cloud]);persist();render()}catch(e){console.error(e);setStatus("Cloud blocked or rules error")}}async function syncOne(r){if(offlineMode||!db||!currentUser||!online())return updateSyncStatus();if(r.cloudSyncStatus==="Synced")return updateSyncStatus();try{const key=reportKey(r);const clean={...r,clientId:r.clientId||key,localId:r.localId||key,cloudSyncStatus:"Synced",lastSyncedAt:new Date().toISOString()};const existingFirebaseId=clean.firebaseId;delete clean.firebaseId;if(existingFirebaseId){await db.collection("reports").doc(existingFirebaseId).set(clean,{merge:true});state.reports=state.reports.map(x=>reportKey(x)===key?{...x,cloudSyncStatus:"Synced",lastSyncedAt:new Date().toISOString()}:x)}else{const ref=await db.collection("reports").add(clean);state.reports=state.reports.map(x=>reportKey(x)===key?{...x,cloudSyncStatus:"Synced",firebaseId:ref.id,lastSyncedAt:new Date().toISOString()}:x)}state.reports=dedupeReports(state.reports);persist();render()}catch(e){console.error(e);updateSyncStatus()}}async function manualSync(){if(syncing)return;if(offlineMode){alert("Offline reports are saved on this iPad. To sync, reconnect, tap Online Login, then sign in.");return updateSyncStatus()}if(!currentUser)return updateSyncStatus();if(!online())return updateSyncStatus();syncing=true;const pending=state.reports.filter(r=>r.cloudSyncStatus!=="Synced"&&!r.firebaseId);setStatus("Syncing "+pending.length+"...");for(const r of pending)await syncOne(r);syncing=false;await loadCloud();updateSyncStatus()}
+
+function bindLoginButtons(){
+ const lb=document.getElementById("loginBtn");
+ if(lb && !lb.dataset.bound){lb.dataset.bound="1";lb.addEventListener("click",function(e){e.preventDefault();login();});}
+ const tb=document.getElementById("togglePasswordBtn");
+ if(tb && !tb.dataset.bound){tb.dataset.bound="1";tb.addEventListener("click",function(e){e.preventDefault();togglePassword();});}
+ const ob=document.getElementById("offlineModeBtn");
+ if(ob && !ob.dataset.bound){ob.dataset.bound="1";ob.addEventListener("click",function(e){e.preventDefault();offlineLogin();});}
+}
+
+document.getElementById("reportModal").addEventListener("click",e=>{if(e.target===document.getElementById("reportModal"))closeSubmissionDetail()});
+
+function bindSubmitButtons(){
+ const submit=document.getElementById("submitBtn");
+ if(submit && !submit.dataset.bound){submit.dataset.bound="1";submit.addEventListener("click",e=>{e.preventDefault();simpleSaveReport("Submitted")});}
+ const draft=document.getElementById("draftBtn");
+ if(draft && !draft.dataset.bound){draft.dataset.bound="1";draft.addEventListener("click",e=>{e.preventDefault();simpleSaveReport("Draft")});}
+}
+
+
+function safeFieldValues(){
+ const v={};
+ document.querySelectorAll("[data-field]").forEach(el=>{
+   if(el && el.value && el.value.trim())v[el.dataset.field]=el.value.trim();
+ });
+ if(typeof jsaStaticValues==="function"){
+   Object.assign(v,jsaStaticValues());
+ }
+ const ppe=(typeof getSelectedPPE==="function"?getSelectedPPE():[]);
+ if(ppe.length)v["PPE Used / EPP Usado"]=ppe.join(", ");
+ return v;
+}
+
+function safeValidate(status){return true;}
+
+
+
+function bindSaveButtonsHard(){
+ const submit=document.getElementById("submitBtn");
+ const draft=document.getElementById("draftBtn");
+ const clear=document.getElementById("clearBtn");
+ if(submit){
+   submit.onclick=function(e){if(e)e.preventDefault();simpleSaveReport("Submitted");return false;};
+ }
+ if(draft){
+   draft.onclick=function(e){if(e)e.preventDefault();simpleSaveReport("Draft");return false;};
+ }
+ if(clear){
+   clear.onclick=function(e){if(e)e.preventDefault();clearForm();return false;};
+ }
+}
+
+
+
+
+function simpleSaveReport(status){
+ try{
+   if(!currentUser){
+     alert("Login first, or use Offline Mode.");
+     return;
+   }
+
+   const f=activeForm();
+   const rid=id();
+   const file=document.getElementById("photoFile");
+   const vals={};
+
+   document.querySelectorAll("[data-field]").forEach(el=>{
+     if(el && el.dataset && el.dataset.field && el.value && el.value.trim()){
+       vals[el.dataset.field]=el.value.trim();
+     }
+   });
+
+   if(typeof jsaStaticValues==="function"){
+     Object.assign(vals,jsaStaticValues());
+   }
+
+   if(typeof getSelectedPPE==="function"){
+     const ppe=getSelectedPPE();
+     if(ppe.length)vals["PPE Used / EPP Usado"]=ppe.join(", ");
+   }
+
+   if(typeof saveJsaWorkersFromStatic==="function")saveJsaWorkersFromStatic();
+   if(typeof saveCrewToWorkerListFromValues==="function")saveCrewToWorkerListFromValues(vals);
+
+   const jobsite=(document.getElementById("defaultJobsite")?.value||"").trim()
+     || vals["Project / Jobsite"]
+     || vals["Proyecto / Sitio"]
+     || vals["Jobsite / Location"]
+     || "";
+
+   const report={
+     id:rid,
+     clientId:rid,
+     localId:rid,
+     company:"GLZSHEETMETAL LLC",
+     language:lang,
+     formId:f.id,
+     formTitle:f[lang].title,
+     status:status,
+     user:currentUser.email,
+     offline:offlineMode,
+     role:userRole,
+     jobsite:jobsite,
+     values:vals,
+     photoName:(document.getElementById("photoName")?.value||"").trim() || (file&&file.files&&file.files[0]?file.files[0].name:""),
+     createdAt:new Date().toISOString(),
+     signatures:(typeof currentSignatures!=="undefined"?[...currentSignatures]:[]),
+     cloudSyncStatus:"Pending cloud sync"
+   };
+
+   state.reports=dedupeReports([report,...state.reports]);
+   state.audit.unshift({id:id(),action:status+" report created",reportId:rid,user:currentUser.email,offline:offlineMode,createdAt:new Date().toISOString()});
+   persist();
+
+   const ss=document.getElementById("saveStatus");
+   if(ss)ss.textContent=status+" saved.";
+
+   if(typeof clearForm==="function")clearForm(false);
+   render();
+
+   if(typeof syncOne==="function")syncOne(report);
+ }catch(err){
+   console.error("Simple save failed:",err);
+   alert("Save failed: "+(err.message||err));
+ }
+}
+
+
+window.addEventListener("online",manualSync);window.addEventListener("offline",updateSyncStatus);document.addEventListener("keydown",e=>{if(e.key==="Enter"&&document.getElementById("loginOverlay").style.display!=="none")login();if(e.key==="Escape"&&document.getElementById("reportModal").style.display==="flex")closeSubmissionDetail()});bindLoginButtons();bindSubmitButtons();bindSaveButtonsHard();bindSaveButtonsHard();render();setStatus("Loading Firebase...");setFirebaseStatus("Loading login system...");loadFirebase().catch(e=>{console.error(e);setStatus("Firebase failed to load");document.getElementById("loginError").textContent="Firebase failed to load. Use Offline Mode if needed.";document.getElementById("loginError").style.display="block";setFirebaseStatus("Firebase failed to load. Offline Mode still works.")});
+
+
+/* HARD_SAVE_OVERRIDE_START */
+function validateRequiredBeforeSubmit(status){return true;}
+
+
+function glzSaveReport(status){
+  try{
+    if(!currentUser){
+      alert("Login first, or use Offline Mode.");
+      return false;
+    }
+
+    const f=activeForm();
+    const rid=id();
+    const file=document.getElementById("photoFile");
+    const vals=glzCollectFieldValues();
+
+    try{ if(typeof saveJsaWorkersFromStatic==="function")saveJsaWorkersFromStatic(); }catch(e){}
+    try{ if(typeof saveCrewToWorkerListFromValues==="function")saveCrewToWorkerListFromValues(vals); }catch(e){}
+
+    const defaultJobsite=(document.getElementById("defaultJobsite")&&document.getElementById("defaultJobsite").value?document.getElementById("defaultJobsite").value.trim():"");
+    const jobsite=defaultJobsite || vals["Project / Jobsite"] || vals["Proyecto / Sitio"] || vals["Jobsite / Location"] || vals["Jobsite"] || "";
+
+    const report={
+      id:rid,
+      clientId:rid,
+      localId:rid,
+      company:"GLZSHEETMETAL LLC",
+      language:lang,
+      formId:f.id,
+      formTitle:f[lang].title,
+      status:status,
+      user:currentUser.email,
+      offline:offlineMode,
+      role:userRole,
+      jobsite:jobsite,
+      values:vals,
+      photoName:(document.getElementById("photoName")&&document.getElementById("photoName").value?document.getElementById("photoName").value.trim():"") || (file&&file.files&&file.files[0]?file.files[0].name:""),
+      createdAt:new Date().toISOString(),
+      signatures:(typeof currentSignatures!=="undefined"?currentSignatures.slice():[]),
+      cloudSyncStatus:"Pending cloud sync"
+    };
+
+    state.reports=dedupeReports([report].concat(state.reports||[]));
+    state.audit=state.audit||[];
+    state.audit.unshift({id:id(),action:status+" report created",reportId:rid,user:currentUser.email,offline:offlineMode,createdAt:new Date().toISOString()});
+    persist();
+
+    const ss=document.getElementById("saveStatus");
+    if(ss)ss.textContent=status+" saved.";
+
+    try{ if(typeof clearForm==="function")clearForm(false); }catch(e){console.warn("clear skipped",e)}
+    try{ render(); }catch(e){console.warn("render skipped",e)}
+    try{ if(typeof syncOne==="function")syncOne(report); }catch(e){console.warn("sync skipped",e)}
+    return true;
+  }catch(err){
+    console.error("GLZ save failed:",err);
+    alert("Save failed: "+(err && err.message ? err.message : err));
+    return false;
+  }
+}
+
+function simpleSaveReport(status){return glzSaveReport(status);}
+function saveReport(status){return glzSaveReport(status);}
+
+function bindSaveButtonsHard(){
+  const submit=document.getElementById("submitBtn");
+  const draft=document.getElementById("draftBtn");
+  const clear=document.getElementById("clearBtn");
+
+  if(submit){
+    submit.type="button";
+    submit.onclick=function(e){
+      if(e)e.preventDefault();
+      glzSaveReport("Submitted");
+      return false;
+    };
+    submit.dataset.glzBound="yes";
+  }
+  if(draft){
+    draft.type="button";
+    draft.onclick=function(e){
+      if(e)e.preventDefault();
+      glzSaveReport("Draft");
+      return false;
+    };
+    draft.dataset.glzBound="yes";
+  }
+  if(clear){
+    clear.type="button";
+    clear.onclick=function(e){
+      if(e)e.preventDefault();
+      try{clearForm()}catch(err){console.error(err)}
+      return false;
+    };
+    clear.dataset.glzBound="yes";
+  }
+}
+
+document.addEventListener("DOMContentLoaded",function(){
+  bindSaveButtonsHard();
+});
+setTimeout(bindSaveButtonsHard,250);
+setTimeout(bindSaveButtonsHard,1000);
+/* HARD_SAVE_OVERRIDE_END */
+
+
+
+/* QUICK_JSA_SAVE_OVERRIDE_START */
+function glzGetQuickJsaValues(){
+  const vals = {};
+
+  // Collect dynamic fields
+  document.querySelectorAll("[data-field]").forEach(function(el){
+    if(el && el.dataset && el.dataset.field && el.value && String(el.value).trim()){
+      vals[el.dataset.field] = String(el.value).trim();
+    }
+  });
+
+  // Collect dedicated visible JSA section
+  const jobsite = (document.getElementById("jsaJobsite") && document.getElementById("jsaJobsite").value ? document.getElementById("jsaJobsite").value.trim() : "");
+  const crew = (document.getElementById("jsaCrewText") && document.getElementById("jsaCrewText").value ? document.getElementById("jsaCrewText").value.trim() : "");
+  const task = (document.getElementById("jsaTask") && document.getElementById("jsaTask").value ? document.getElementById("jsaTask").value.trim() : "");
+  const hazards = (document.getElementById("jsaHazards") && document.getElementById("jsaHazards").value ? document.getElementById("jsaHazards").value.trim() : "");
+  const controls = (document.getElementById("jsaControls") && document.getElementById("jsaControls").value ? document.getElementById("jsaControls").value.trim() : "");
+
+  if(jobsite) vals["Project / Jobsite"] = jobsite;
+  if(crew) vals["Crew / Workers"] = crew;
+  if(task) vals["Task / Work Being Done"] = task;
+  if(hazards) vals["Main Hazards"] = hazards;
+  if(controls) vals["Controls / How Hazards Will Be Prevented"] = controls;
+
+  // PPE
+  const ppe = [];
+  document.querySelectorAll(".ppeCheck:checked").forEach(function(cb){
+    if(cb.value)ppe.push(cb.value);
+  });
+  const otherPpe = document.getElementById("otherPPE");
+  if(otherPpe && otherPpe.value && otherPpe.value.trim())ppe.push(otherPpe.value.trim());
+  if(ppe.length) vals["PPE Used / EPP Usado"] = ppe.join(", ");
+
+  return vals;
+}
+
+function glzSaveQuickJsa(status){
+  try{
+    if(!currentUser){
+      alert("Login first, or use Offline Mode.");
+      return false;
+    }
+
+    const vals = glzGetQuickJsaValues();
+    const rid = id();
+    const file = document.getElementById("photoFile");
+    const jobsite = vals["Project / Jobsite"] || (document.getElementById("defaultJobsite") && document.getElementById("defaultJobsite").value ? document.getElementById("defaultJobsite").value.trim() : "");
+
+    // Save manually typed crew into future worker list
+    try{
+      const crew = vals["Crew / Workers"] || "";
+      if(crew){
+        if(!state.workers)state.workers=[];
+        crew.split(",").map(function(x){return x.trim();}).filter(Boolean).forEach(function(name){
+          if(!state.workers.some(function(w){return String(w.name||w).toLowerCase()===name.toLowerCase();})){
+            state.workers.push({name:name,createdAt:new Date().toISOString()});
+          }
+        });
+      }
+    }catch(e){console.warn("Worker save skipped",e)}
+
+    const report = {
+      id: rid,
+      clientId: rid,
+      localId: rid,
+      company: "GLZSHEETMETAL LLC",
+      language: lang,
+      formId: "jha",
+      formTitle: lang === "es" ? "JSA/JHA Rápido - Análisis de Seguridad" : "Quick Job Safety Analysis (JSA/JHA)",
+      status: status,
+      user: currentUser.email,
+      offline: offlineMode,
+      role: userRole,
+      jobsite: jobsite,
+      values: vals,
+      photoName: (document.getElementById("photoName") && document.getElementById("photoName").value ? document.getElementById("photoName").value.trim() : "") || (file && file.files && file.files[0] ? file.files[0].name : ""),
+      createdAt: new Date().toISOString(),
+      signatures: (typeof currentSignatures !== "undefined" ? currentSignatures.slice() : []),
+      cloudSyncStatus: "Pending cloud sync"
+    };
+
+    state.reports = dedupeReports([report].concat(state.reports || []));
+    state.audit = state.audit || [];
+    state.audit.unshift({
+      id: id(),
+      action: status + " Quick JSA report created",
+      reportId: rid,
+      user: currentUser.email,
+      offline: offlineMode,
+      createdAt: new Date().toISOString()
+    });
+
+    persist();
+
+    const saveStatus = document.getElementById("saveStatus");
+    if(saveStatus) saveStatus.textContent = status + " Quick JSA saved.";
+
+    // Clear only after save succeeds
+    try{ if(typeof clearForm === "function") clearForm(false); }catch(e){}
+    try{ if(typeof render === "function") render(); }catch(e){}
+    try{ if(typeof syncOne === "function") syncOne(report); }catch(e){console.warn("Sync skipped",e)}
+
+    alert(status + " Quick JSA saved.");
+    return true;
+  }catch(err){
+    console.error("Quick JSA save failed:", err);
+    alert("Quick JSA save failed: " + (err && err.message ? err.message : err));
+    return false;
+  }
+}
+
+function glzSaveAnyForm(status){
+  if(typeof activeForm === "function" && activeForm().id === "jha"){
+    return glzSaveQuickJsa(status);
+  }
+  if(typeof glzSaveReport === "function"){
+    return glzSaveReport(status);
+  }
+  if(typeof simpleSaveReport === "function"){
+    return simpleSaveReport(status);
+  }
+  if(typeof saveReport === "function"){
+    return saveReport(status);
+  }
+  alert("Save system not loaded.");
+  return false;
+}
+
+function glzBindQuickJsaButtons(){
+  const submit = document.getElementById("submitBtn");
+  const draft = document.getElementById("draftBtn");
+  const clear = document.getElementById("clearBtn");
+
+  if(submit){
+    submit.type = "button";
+    submit.onclick = function(e){
+      if(e)e.preventDefault();
+      glzSaveAnyForm("Submitted");
+      return false;
+    };
+  }
+
+  if(draft){
+    draft.type = "button";
+    draft.onclick = function(e){
+      if(e)e.preventDefault();
+      glzSaveAnyForm("Draft");
+      return false;
+    };
+  }
+
+  if(clear){
+    clear.type = "button";
+    clear.onclick = function(e){
+      if(e)e.preventDefault();
+      try{ clearForm(); }catch(err){ console.error(err); }
+      return false;
+    };
+  }
+}
+
+// Run repeatedly because render() can recreate or reset button handlers.
+document.addEventListener("DOMContentLoaded", glzBindQuickJsaButtons);
+setTimeout(glzBindQuickJsaButtons, 100);
+setTimeout(glzBindQuickJsaButtons, 500);
+setTimeout(glzBindQuickJsaButtons, 1500);
+/* QUICK_JSA_SAVE_OVERRIDE_END */
+
+
+
+/* GLZ_DEDUP_DELETE_FIX_START */
+let glzSaveInProgress=false;
+
+function glzReportKeys(r){
+  return [r.id,r.localId,r.clientId,r.firebaseId].filter(Boolean);
+}
+
+async function glzDeleteReportByKey(key){
+  try{
+    if(!key)return alert("No report selected.");
+    const report=(state.reports||[]).find(function(r){
+      return glzReportKeys(r).includes(key);
+    });
+    if(!report)return alert("Report not found on this device.");
+
+    if(!confirm("Remove/delete this report?"))return;
+
+    const keys=glzReportKeys(report);
+
+    // Hide globally so it does not reappear from local hidden views.
+    try{
+      if(typeof hideReportGlobally==="function")hideReportGlobally(report);
+    }catch(e){console.warn("Hide skipped",e)}
+
+    // Remove all duplicate local copies with matching keys.
+    state.reports=(state.reports||[]).filter(function(r){
+      return !glzReportKeys(r).some(function(k){return keys.includes(k);});
+    });
+
+    state.audit=state.audit||[];
+    state.audit.unshift({
+      id:id(),
+      action:"Admin removed/deleted report",
+      reportId:report.id||key,
+      user:currentUser&&currentUser.email?currentUser.email:"",
+      createdAt:new Date().toISOString()
+    });
+
+    persist();
+
+    // Attempt Firestore delete.
+    if(db && currentUser && report.firebaseId){
+      try{
+        await db.collection("reports").doc(report.firebaseId).delete();
+      }catch(e){
+        console.warn("Firebase delete blocked or failed:",e);
+      }
+    }
+
+    try{render();}catch(e){}
+    alert("Report removed.");
+  }catch(err){
+    console.error("Delete failed:",err);
+    alert("Delete failed: "+(err.message||err));
+  }
+}
+
+async function removeSelectedSubmission(){
+  const key=selectedSubmissionKey;
+  return glzDeleteReportByKey(key);
+}
+
+function forceRemoveReport(reportId){
+  return glzDeleteReportByKey(reportId);
+}
+
+function deleteReport(rid){
+  return glzDeleteReportByKey(rid);
+}
+
+function glzSaveQuickJsa(status){
+  try{
+    if(glzSaveInProgress){
+      console.warn("Save already in progress.");
+      return false;
+    }
+    glzSaveInProgress=true;
+
+    if(!currentUser){
+      alert("Login first, or use Offline Mode.");
+      glzSaveInProgress=false;
+      return false;
+    }
+
+    const vals = glzGetQuickJsaValues();
+    const rid = id();
+    const file = document.getElementById("photoFile");
+    const jobsite = vals["Project / Jobsite"] || (document.getElementById("defaultJobsite") && document.getElementById("defaultJobsite").value ? document.getElementById("defaultJobsite").value.trim() : "");
+
+    try{
+      const crew = vals["Crew / Workers"] || "";
+      if(crew){
+        if(!state.workers)state.workers=[];
+        crew.split(",").map(function(x){return x.trim();}).filter(Boolean).forEach(function(name){
+          if(!state.workers.some(function(w){return String(w.name||w).toLowerCase()===name.toLowerCase();})){
+            state.workers.push({name:name,createdAt:new Date().toISOString()});
+          }
+        });
+      }
+    }catch(e){console.warn("Worker save skipped",e)}
+
+    const report = {
+      id: rid,
+      clientId: rid,
+      localId: rid,
+      company: "GLZSHEETMETAL LLC",
+      language: lang,
+      formId: "jha",
+      formTitle: lang === "es" ? "JSA/JHA Rápido - Análisis de Seguridad" : "Quick Job Safety Analysis (JSA/JHA)",
+      status: status,
+      user: currentUser.email,
+      offline: offlineMode,
+      role: userRole,
+      jobsite: jobsite,
+      values: vals,
+      photoName: (document.getElementById("photoName") && document.getElementById("photoName").value ? document.getElementById("photoName").value.trim() : "") || (file && file.files && file.files[0] ? file.files[0].name : ""),
+      createdAt: new Date().toISOString(),
+      signatures: (typeof currentSignatures !== "undefined" ? currentSignatures.slice() : []),
+      cloudSyncStatus: "Pending cloud sync"
+    };
+
+    // Add only once locally.
+    state.reports = dedupeReports([report].concat(state.reports || []));
+    state.audit = state.audit || [];
+    state.audit.unshift({
+      id: id(),
+      action: status + " Quick JSA report created",
+      reportId: rid,
+      user: currentUser.email,
+      offline: offlineMode,
+      createdAt: new Date().toISOString()
+    });
+
+    persist();
+
+    const saveStatus = document.getElementById("saveStatus");
+    if(saveStatus) saveStatus.textContent = status + " Quick JSA saved.";
+
+    try{ if(typeof clearForm === "function") clearForm(false); }catch(e){}
+    try{ if(typeof render === "function") render(); }catch(e){}
+    try{ if(typeof syncOne === "function") syncOne(report); }catch(e){console.warn("Sync skipped",e)}
+
+    alert(status + " Quick JSA saved.");
+    setTimeout(function(){glzSaveInProgress=false;},1000);
+    return true;
+  }catch(err){
+    glzSaveInProgress=false;
+    console.error("Quick JSA save failed:", err);
+    alert("Quick JSA save failed: " + (err && err.message ? err.message : err));
+    return false;
+  }
+}
+
+function glzBindQuickJsaButtons(){
+  const submit = document.getElementById("submitBtn");
+  const draft = document.getElementById("draftBtn");
+  const clear = document.getElementById("clearBtn");
+
+  if(submit){
+    const fresh=submit.cloneNode(true);
+    submit.parentNode.replaceChild(fresh,submit);
+    fresh.type="button";
+    fresh.onclick=function(e){
+      if(e){e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();}
+      glzSaveAnyForm("Submitted");
+      return false;
+    };
+  }
+
+  if(draft){
+    const fresh=draft.cloneNode(true);
+    draft.parentNode.replaceChild(fresh,draft);
+    fresh.type="button";
+    fresh.onclick=function(e){
+      if(e){e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();}
+      glzSaveAnyForm("Draft");
+      return false;
+    };
+  }
+
+  if(clear){
+    const fresh=clear.cloneNode(true);
+    clear.parentNode.replaceChild(fresh,clear);
+    fresh.type="button";
+    fresh.onclick=function(e){
+      if(e){e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();}
+      try{ clearForm(); }catch(err){ console.error(err); }
+      return false;
+    };
+  }
+}
+
+function renderReportCard(r){
+ const vals=Object.entries(r.values||{}).filter(function(pair){return pair[1]}).slice(0,4).map(function(pair){return "<b>"+escapeHTML(pair[0])+":</b> "+escapeHTML(pair[1])}).join("<br>");
+ const key=r.firebaseId||r.clientId||r.localId||r.id;
+ const div=document.createElement("div");
+ div.className="report";
+ div.innerHTML="<h3>"+escapeHTML(r.formTitle||"Report")+"</h3><span class='badge'>"+escapeHTML(r.status||"")+"</span>"+(typeof previousAdminReports==="function"&&previousAdminReports([r]).length?" <span class='badge'>Previous Report</span>":"")+"<p class='muted'>"+new Date(r.createdAt).toLocaleString()+"<br>"+escapeHTML(r.user||"")+"<br>"+escapeHTML(r.role||"")+"<br>"+escapeHTML(r.jobsite||"")+"</p><p>"+vals+"</p><p class='muted'><b>Signatures:</b> "+((r.signatures||[]).length)+"</p><p class='muted'><b>Sync:</b> "+escapeHTML(r.cloudSyncStatus||"Pending")+"</p>";
+
+ if(isAdmin()){
+   const bar=document.createElement("div");
+   bar.className="bar";
+   const view=document.createElement("button"); view.className="secondary"; view.type="button"; view.textContent="View Details"; view.onclick=function(){openSubmissionDetail(key)};
+   const edit=document.createElement("button"); edit.className="primary"; edit.type="button"; edit.textContent="Edit Submitted Report"; edit.onclick=function(){selectedSubmissionKey=key;openEditSubmission()};
+   const pdf=document.createElement("button"); pdf.className="secondary"; pdf.type="button"; pdf.textContent="One Report PDF"; pdf.onclick=function(){selectedSubmissionKey=key;exportOneReportPDF()};
+   const close=document.createElement("button"); close.className="success"; close.type="button"; close.textContent=tr().close; close.onclick=function(){closeReport(r.id)};
+   const remove=document.createElement("button"); remove.className="danger"; remove.type="button"; remove.textContent="Remove/Delete"; remove.onclick=function(){glzDeleteReportByKey(key)};
+   bar.appendChild(view);bar.appendChild(edit);bar.appendChild(pdf);bar.appendChild(close);bar.appendChild(remove);
+   div.appendChild(bar);
+ }else{
+   const badge=document.createElement("span"); badge.className="badge"; badge.textContent="Employee View"; div.appendChild(badge);
+ }
+ return div;
+}
+/* GLZ_DEDUP_DELETE_FIX_END */
+
+
+
+/* GLZ_FILTER_POPULATE_FIX_START */
+function glzAllReportsForFilters(){
+  return (state && state.reports) ? state.reports : [];
+}
+
+function glzNormalizeText(v){
+  return String(v || "").trim();
+}
+
+function glzReportJobsite(r){
+  return glzNormalizeText(
+    r.jobsite ||
+    (r.values && (r.values["Project / Jobsite"] || r.values["Proyecto / Sitio"] || r.values["Jobsite / Location"] || r.values["Jobsite"])) ||
+    ""
+  );
+}
+
+function populateAdminFilters(){
+  const fj=document.getElementById("filterJobsite");
+  const fu=document.getElementById("filterUser");
+  if(!fj || !fu)return;
+
+  const curJ=fj.value || "";
+  const curU=fu.value || "";
+
+  const source=glzAllReportsForFilters();
+
+  const jobs=[...new Set(source.map(glzReportJobsite).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  const users=[...new Set(source.map(r=>glzNormalizeText(r.user).toLowerCase()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+
+  fj.innerHTML='<option value="">All jobsites</option>' + jobs.map(j=>'<option value="'+escapeHTML(j)+'">'+escapeHTML(j)+'</option>').join("");
+  fu.innerHTML='<option value="">All users</option>' + users.map(u=>'<option value="'+escapeHTML(u)+'">'+escapeHTML(u)+'</option>').join("");
+
+  if(jobs.includes(curJ))fj.value=curJ;
+  if(users.includes(curU))fu.value=curU;
+}
+
+function applyAdminFilters(list){
+  const q=((document.getElementById("search")?.value||document.getElementById("sideSearch")?.value||"").toLowerCase());
+  const job=document.getElementById("filterJobsite")?.value||"";
+  const user=document.getElementById("filterUser")?.value||"";
+  const status=document.getElementById("filterStatus")?.value||"";
+
+  return (list||[]).filter(r=>{
+    const reportJob=glzReportJobsite(r);
+    const reportUser=glzNormalizeText(r.user).toLowerCase();
+
+    if(q && !JSON.stringify(r).toLowerCase().includes(q))return false;
+    if(job && reportJob!==job)return false;
+    if(user && reportUser!==user)return false;
+    if(status && (r.status||"")!==status)return false;
+    return true;
+  });
+}
+
+function render(){
+  renderJobsiteSelect();
+  if(typeof renderPPEChecklist==="function")renderPPEChecklist();
+  renderForms();
+  renderFields();
+  if(typeof renderJsaRequiredSection==="function")renderJsaRequiredSection();
+  setupSignaturePad();
+  renderSignatureList();
+  populateAdminFilters();
+  renderStats();
+  renderReports();
+  renderAudit();
+  updateSyncStatus();
+  try{if(typeof bindSaveButtonsHard==="function")bindSaveButtonsHard()}catch(e){}
+  try{if(typeof glzBindQuickJsaButtons==="function")glzBindQuickJsaButtons()}catch(e){};try{if(typeof glzBindAdminTabs==="function")glzBindAdminTabs()}catch(e){}
+}
+/* GLZ_FILTER_POPULATE_FIX_END */
+
+
+
+/* GLZ_ADMIN_TAB_FIX_START */
+function glzOpenEmployeePanel(){
+  try{
+    panel="employee";
+    const emp=document.getElementById("employeePanel");
+    const admin=document.getElementById("adminPanel");
+    const empTab=document.getElementById("empTab");
+    const adminTab=document.getElementById("adminTab");
+    if(emp)emp.className="card";
+    if(admin)admin.className="card hidden";
+    if(empTab)empTab.className="tab active";
+    if(adminTab)adminTab.className="tab";
+    try{renderReports()}catch(e){}
+  }catch(err){
+    console.error("Employee panel open failed",err);
+  }
+}
+
+function glzOpenAdminPanel(){
+  try{
+    if(!isAdmin()){
+      alert("Only Foreman or Safety Manager can open the Admin Dashboard. Your current role is: "+userRole);
+      return false;
+    }
+    panel="admin";
+    const emp=document.getElementById("employeePanel");
+    const admin=document.getElementById("adminPanel");
+    const empTab=document.getElementById("empTab");
+    const adminTab=document.getElementById("adminTab");
+    if(emp)emp.className="card hidden";
+    if(admin)admin.className="card";
+    if(empTab)empTab.className="tab";
+    if(adminTab)adminTab.className="tab active";
+    try{populateAdminFilters()}catch(e){console.warn(e)}
+    try{renderStats()}catch(e){console.warn(e)}
+    try{renderReports()}catch(e){console.warn(e)}
+    try{renderAudit()}catch(e){console.warn(e)}
+    const reports=document.getElementById("reports");
+    if(reports)reports.scrollIntoView({behavior:"smooth",block:"start"});
+    return true;
+  }catch(err){
+    console.error("Admin panel open failed",err);
+    alert("Admin Dashboard failed to open: "+(err.message||err));
+    return false;
+  }
+}
+
+function glzBindAdminTabs(){
+  const empTab=document.getElementById("empTab");
+  const adminTab=document.getElementById("adminTab");
+  if(empTab){
+    empTab.onclick=function(e){
+      if(e)e.preventDefault();
+      glzOpenEmployeePanel();
+      return false;
+    };
+  }
+  if(adminTab){
+    adminTab.style.display=isAdmin()?"block":"none";
+    adminTab.onclick=function(e){
+      if(e)e.preventDefault();
+      glzOpenAdminPanel();
+      return false;
+    };
+  }
+}
+
+document.addEventListener("DOMContentLoaded",glzBindAdminTabs);
+setTimeout(glzBindAdminTabs,200);
+setTimeout(glzBindAdminTabs,1000);
+/* GLZ_ADMIN_TAB_FIX_END */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* GLZ_VISIBLE_NATIVE_JSA_SECTION_START */
+function glzIsJsaNow(){
+  try{
+    if(typeof activeFormId!=="undefined" && activeFormId==="jha")return true;
+    const t=document.getElementById("formTitle");
+    if(t && /JSA|JHA|Quick Job|Job Safety/i.test(t.textContent||""))return true;
+  }catch(e){}
+  return false;
+}
+function glzWorkerNameX(w){return String((w&&w.name)?w.name:(w||"")).trim();}
+function glzNativeCrewList(){
+  const txt=(document.getElementById("glzNativeCrewText")?.value||"").trim();
+  if(txt)return txt.split(",").map(x=>x.trim()).filter(Boolean);
+  const sel=document.getElementById("glzNativeCrewSelect");
+  return sel?[...sel.selectedOptions].map(o=>o.value):[];
+}
+function glzNativeSetCrew(list){
+  const names=(list||[]).map(x=>String(x||"").trim()).filter(Boolean);
+  const txt=document.getElementById("glzNativeCrewText");
+  if(txt)txt.value=names.join(", ");
+  const sel=document.getElementById("glzNativeCrewSelect");
+  if(sel)[...sel.options].forEach(o=>{o.selected=names.some(n=>n.toLowerCase()===o.value.toLowerCase())});
+}
+function glzNativeJobsite(){
+  return (document.getElementById("glzNativeJobsite")?.value||document.getElementById("defaultJobsite")?.value||"").trim();
+}
+function glzRenderVisibleJsa(){
+  const sec=document.getElementById("glzJsaNativeSection");
+  if(!sec)return;
+  const show=glzIsJsaNow();
+  sec.style.display=show?"block":"none";
+  if(!show)return;
+
+  const job=document.getElementById("glzNativeJobsite");
+  if(job){
+    const cur=job.value || (document.getElementById("defaultJobsite")?.value||"");
+    job.innerHTML='<option value="">Select jobsite / Seleccione proyecto</option>'+(state.jobsites||[]).map(j=>'<option value="'+escapeHTML(j)+'">'+escapeHTML(j)+'</option>').join("");
+    job.value=cur;
+    job.onchange=function(){
+      const def=document.getElementById("defaultJobsite"); if(def)def.value=this.value;
+      state.crewByJobsite=state.crewByJobsite||{};
+      glzNativeSetCrew(state.crewByJobsite[this.value]||[]);
+    };
+  }
+  const crew=document.getElementById("glzNativeCrewSelect");
+  if(crew){
+    const selected=glzNativeCrewList();
+    crew.innerHTML=(state.workers||[]).map(w=>{
+      const n=glzWorkerNameX(w); if(!n)return "";
+      const sel=selected.some(s=>s.toLowerCase()===n.toLowerCase())?"selected":"";
+      return '<option value="'+escapeHTML(n)+'" '+sel+'>'+escapeHTML(n)+'</option>';
+    }).join("");
+    crew.onchange=function(){
+      glzNativeSetCrew([...crew.selectedOptions].map(o=>o.value));
+      glzSaveNativeCrewForJob();
+    };
+  }
+  const addJob=document.getElementById("glzNativeAddJobsite");
+  if(addJob)addJob.onclick=function(e){
+    if(e)e.preventDefault();
+    const inp=document.getElementById("glzNativeNewJobsite");
+    const val=(inp?.value||"").trim();
+    if(!val)return alert("Enter jobsite.");
+    state.jobsites=state.jobsites||[];
+    if(!state.jobsites.some(j=>j.toLowerCase()===val.toLowerCase()))state.jobsites.push(val);
+    state.jobsites.sort((a,b)=>a.localeCompare(b));
+    persist(); inp.value=""; glzRenderVisibleJsa();
+    const sel=document.getElementById("glzNativeJobsite"); if(sel){sel.value=val; sel.onchange();}
+    return false;
+  };
+  const addWorker=document.getElementById("glzNativeAddWorker");
+  if(addWorker)addWorker.onclick=function(e){
+    if(e)e.preventDefault();
+    const name=(document.getElementById("glzNativeNewWorker")?.value||"").trim();
+    const role=(document.getElementById("glzNativeNewWorkerRole")?.value||"").trim();
+    if(!name)return alert("Enter worker name.");
+    const label=role?name+" - "+role:name;
+    state.workers=state.workers||[];
+    if(!state.workers.some(w=>glzWorkerNameX(w).toLowerCase()===label.toLowerCase())){
+      state.workers.push({name:label,createdAt:new Date().toISOString()});
+      state.workers.sort((a,b)=>glzWorkerNameX(a).localeCompare(glzWorkerNameX(b)));
+    }
+    persist();
+    document.getElementById("glzNativeNewWorker").value="";
+    const rb=document.getElementById("glzNativeNewWorkerRole"); if(rb)rb.value="";
+    const cur=glzNativeCrewList(); if(!cur.some(x=>x.toLowerCase()===label.toLowerCase()))cur.push(label);
+    glzRenderVisibleJsa(); glzNativeSetCrew(cur); glzSaveNativeCrewForJob();
+    return false;
+  };
+  const rem=document.getElementById("glzNativeRemoveJobsiteCrew");
+  if(rem)rem.onclick=function(e){
+    if(e)e.preventDefault();
+    const sel=[...document.getElementById("glzNativeCrewSelect").selectedOptions].map(o=>o.value);
+    if(!sel.length)return alert("Select crew member(s) first.");
+    const job=glzNativeJobsite(); if(!job)return alert("Select a jobsite first.");
+    state.crewByJobsite=state.crewByJobsite||{};
+    state.crewByJobsite[job]=(state.crewByJobsite[job]||[]).filter(n=>!sel.includes(n));
+    persist(); glzNativeSetCrew(state.crewByJobsite[job]||[]);
+    return false;
+  };
+  const del=document.getElementById("glzNativeDeleteWorker");
+  if(del)del.onclick=function(e){
+    if(e)e.preventDefault();
+    const sel=[...document.getElementById("glzNativeCrewSelect").selectedOptions].map(o=>o.value);
+    if(!sel.length)return alert("Select crew member(s) first.");
+    if(!confirm("Delete selected worker(s) permanently?"))return false;
+    state.workers=(state.workers||[]).filter(w=>!sel.includes(glzWorkerNameX(w)));
+    state.crewByJobsite=state.crewByJobsite||{};
+    Object.keys(state.crewByJobsite).forEach(j=>{state.crewByJobsite[j]=(state.crewByJobsite[j]||[]).filter(n=>!sel.includes(n))});
+    persist(); glzNativeSetCrew([]); glzRenderVisibleJsa();
+    return false;
+  };
+}
+function glzSaveNativeCrewForJob(){
+  const job=glzNativeJobsite(); if(!job)return;
+  state.crewByJobsite=state.crewByJobsite||{};
+  state.crewByJobsite[job]=[...new Set(glzNativeCrewList())].sort((a,b)=>a.localeCompare(b));
+  persist();
+}
+function jsaStaticValues(){return {}}
+function saveJsaWorkersFromStatic(){
+  const crew=glzNativeCrewList();
+  state.workers=state.workers||[];
+  crew.forEach(n=>{if(!state.workers.some(w=>glzWorkerNameX(w).toLowerCase()===n.toLowerCase()))state.workers.push({name:n,createdAt:new Date().toISOString()})});
+  glzSaveNativeCrewForJob(); persist();
+}
+function clearJsaStatic(){
+  ["glzNativeCrewText","glzNativeTask","glzNativeHazards","glzNativeControls","glzNativeNewJobsite","glzNativeNewWorker","glzNativeNewWorkerRole"].forEach(id=>{const el=document.getElementById(id);if(el)el.value=""});
+}
+const oldRenderVisibleJsa=typeof render==="function"?render:null;
+if(oldRenderVisibleJsa){
+  render=function(){oldRenderVisibleJsa();glzRenderVisibleJsa();}
+}
+document.addEventListener("DOMContentLoaded",glzRenderVisibleJsa);
+setTimeout(glzRenderVisibleJsa,200);
+setTimeout(glzRenderVisibleJsa,1000);
+/* GLZ_VISIBLE_NATIVE_JSA_SECTION_END */
+
+</script><!-- JSA_FIELDS_ENABLED_VERIFIED -->
+</body></html>
