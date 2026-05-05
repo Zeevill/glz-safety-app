@@ -94,6 +94,42 @@ main{padding:0 18px 18px}.stats{display:grid;grid-template-columns:repeat(6,1fr)
   </div>
 </div>
 <label id="photoLabel">Photo / Attachment Reference</label><input id="photoName" placeholder="Example: photo-001.jpg"><label>iPad Camera / Photo File</label><input id="photoFile" type="file" accept="image/*" capture="environment">
+<div id="glzStandaloneJsa" class="glzStandaloneJsa" style="display:block">
+  <h3>Quick Job Safety Analysis / JSA-JHA</h3>
+  <p class="muted">Complete these fields for the Quick Job Safety Analysis report.</p>
+  <div class="glzJsaGrid">
+    <div class="full">
+      <label>Jobsite / Proyecto</label>
+      <select id="glzJsaJobsite"></select>
+      <div class="bar">
+        <input id="glzJsaNewJobsite" placeholder="Add jobsite / Agregar proyecto">
+        <button class="secondary" type="button" id="glzJsaAddJobsite">Add Jobsite</button>
+      </div>
+    </div>
+    <div class="full">
+      <label>Crew / Workers / Cuadrilla</label>
+      <select id="glzJsaCrewSelect" multiple size="6"></select>
+      <textarea id="glzJsaCrewText" placeholder="Selected workers appear here, or type workers manually."></textarea>
+      <div class="bar">
+        <input id="glzJsaNewWorker" placeholder="Worker name / Nombre">
+        <input id="glzJsaNewWorkerRole" placeholder="Role/trade optional / Oficio opcional">
+        <button class="secondary" type="button" id="glzJsaAddWorker">Save Worker</button>
+      </div>
+    </div>
+    <div class="full">
+      <label>Task / Work Being Done / Tarea</label>
+      <textarea id="glzJsaTask" placeholder="Describe task / Describa la tarea"></textarea>
+    </div>
+    <div>
+      <label>Main Hazards / Peligros</label>
+      <textarea id="glzJsaHazards" placeholder="List hazards / Liste peligros"></textarea>
+    </div>
+    <div>
+      <label>Controls / Controles</label>
+      <textarea id="glzJsaControls" placeholder="How hazards will be controlled"></textarea>
+    </div>
+  </div>
+</div>
 <div class="ppeBox">
 <label>Required / Used PPE / EPP Requerido o Usado</label>
 <div id="ppeChecklist" class="ppeGrid"></div>
@@ -1835,6 +1871,175 @@ document.addEventListener("DOMContentLoaded",function(){
 });
 setInterval(glzRenderStandaloneJsa,1000);
 /* GLZ_STANDALONE_JSA_FORCE_END */
+
+
+
+/* GLZ_FORCE_VISIBLE_JSA_FIELDS_FINAL_START */
+function glzIsQuickJsaSelectedFinal(){
+  try{
+    if(typeof activeFormId!=="undefined" && activeFormId==="jha")return true;
+    const title=document.getElementById("formTitle");
+    if(title && /JSA|JHA|Job Safety|Job Hazard|Quick Job/i.test(title.textContent||""))return true;
+  }catch(e){}
+  return false;
+}
+
+function glzWorkerLabelFinal(w){
+  return String((w && w.name) ? w.name : (w || "")).trim();
+}
+
+function glzRenderStandaloneJsaFinal(){
+  const box=document.getElementById("glzStandaloneJsa");
+  if(!box)return;
+  const show=glzIsQuickJsaSelectedFinal();
+  box.style.display=show?"block":"none";
+  if(!show)return;
+
+  const job=document.getElementById("glzJsaJobsite");
+  if(job){
+    const current=job.value || (document.getElementById("defaultJobsite")?.value||"");
+    job.innerHTML='<option value="">Select jobsite / Seleccione proyecto</option>'+(state.jobsites||[]).map(function(j){
+      return '<option value="'+escapeHTML(j)+'">'+escapeHTML(j)+'</option>';
+    }).join("");
+    job.value=current;
+    job.onchange=function(){
+      const def=document.getElementById("defaultJobsite");
+      if(def)def.value=this.value;
+    };
+  }
+
+  const crew=document.getElementById("glzJsaCrewSelect");
+  if(crew){
+    const selected=(document.getElementById("glzJsaCrewText")?.value||"").split(",").map(x=>x.trim()).filter(Boolean);
+    crew.innerHTML=(state.workers||[]).map(function(w){
+      const name=glzWorkerLabelFinal(w);
+      if(!name)return "";
+      const sel=selected.some(s=>s.toLowerCase()===name.toLowerCase())?"selected":"";
+      return '<option value="'+escapeHTML(name)+'" '+sel+'>'+escapeHTML(name)+'</option>';
+    }).join("");
+    crew.onchange=function(){
+      const txt=document.getElementById("glzJsaCrewText");
+      if(txt)txt.value=[...crew.selectedOptions].map(o=>o.value).join(", ");
+    };
+  }
+
+  const addJob=document.getElementById("glzJsaAddJobsite");
+  if(addJob){
+    addJob.onclick=function(e){
+      if(e)e.preventDefault();
+      const input=document.getElementById("glzJsaNewJobsite");
+      const val=(input?.value||"").trim();
+      if(!val)return alert("Enter a jobsite name.");
+      state.jobsites=state.jobsites||[];
+      if(!state.jobsites.some(j=>j.toLowerCase()===val.toLowerCase()))state.jobsites.push(val);
+      state.jobsites.sort((a,b)=>a.localeCompare(b));
+      persist();
+      input.value="";
+      glzRenderStandaloneJsaFinal();
+      const sel=document.getElementById("glzJsaJobsite"); if(sel)sel.value=val;
+      const def=document.getElementById("defaultJobsite"); if(def)def.value=val;
+      return false;
+    };
+  }
+
+  const addWorker=document.getElementById("glzJsaAddWorker");
+  if(addWorker){
+    addWorker.onclick=function(e){
+      if(e)e.preventDefault();
+      const name=(document.getElementById("glzJsaNewWorker")?.value||"").trim();
+      const role=(document.getElementById("glzJsaNewWorkerRole")?.value||"").trim();
+      if(!name)return alert("Enter worker name.");
+      const label=role ? name+" - "+role : name;
+      state.workers=state.workers||[];
+      if(!state.workers.some(w=>glzWorkerLabelFinal(w).toLowerCase()===label.toLowerCase())){
+        state.workers.push({name:label,createdAt:new Date().toISOString()});
+        state.workers.sort((a,b)=>glzWorkerLabelFinal(a).localeCompare(glzWorkerLabelFinal(b)));
+      }
+      persist();
+      document.getElementById("glzJsaNewWorker").value="";
+      const roleBox=document.getElementById("glzJsaNewWorkerRole"); if(roleBox)roleBox.value="";
+      glzRenderStandaloneJsaFinal();
+      const sel=document.getElementById("glzJsaCrewSelect");
+      if(sel){[...sel.options].forEach(o=>{if(o.value===label)o.selected=true}); if(sel.onchange)sel.onchange();}
+      return false;
+    };
+  }
+}
+
+function jsaStaticValues(){
+  if(!glzIsQuickJsaSelectedFinal())return {};
+  return {
+    "Project / Jobsite":(document.getElementById("glzJsaJobsite")?.value||"").trim(),
+    "Crew / Workers":(document.getElementById("glzJsaCrewText")?.value||"").trim(),
+    "Task / Work Being Done":(document.getElementById("glzJsaTask")?.value||"").trim(),
+    "Main Hazards":(document.getElementById("glzJsaHazards")?.value||"").trim(),
+    "Controls / How Hazards Will Be Prevented":(document.getElementById("glzJsaControls")?.value||"").trim()
+  };
+}
+
+function saveJsaWorkersFromStatic(){
+  const crew=(document.getElementById("glzJsaCrewText")?.value||"").trim();
+  if(!crew)return;
+  state.workers=state.workers||[];
+  crew.split(",").map(x=>x.trim()).filter(Boolean).forEach(function(name){
+    if(!state.workers.some(w=>glzWorkerLabelFinal(w).toLowerCase()===name.toLowerCase())){
+      state.workers.push({name:name,createdAt:new Date().toISOString()});
+    }
+  });
+  state.workers.sort((a,b)=>glzWorkerLabelFinal(a).localeCompare(glzWorkerLabelFinal(b)));
+  persist();
+}
+
+function clearJsaStatic(){
+  ["glzJsaTask","glzJsaHazards","glzJsaControls","glzJsaCrewText","glzJsaNewJobsite","glzJsaNewWorker","glzJsaNewWorkerRole"].forEach(id=>{const el=document.getElementById(id);if(el)el.value=""});
+  const job=document.getElementById("glzJsaJobsite"); if(job)job.value="";
+  const crew=document.getElementById("glzJsaCrewSelect"); if(crew)[...crew.options].forEach(o=>o.selected=false);
+}
+
+// Hook into the actual form buttons and render cycle.
+function glzPatchQuickJsaFormButtonsFinal(){
+  document.querySelectorAll(".formBtn").forEach(function(btn){
+    const text=btn.textContent||"";
+    if(/JSA|JHA|Job Safety|Hazard Analysis|Quick Job/i.test(text)){
+      btn.onclick=function(e){
+        if(e)e.preventDefault();
+        activeFormId="jha";
+        try{renderForms()}catch(err){}
+        try{renderFields()}catch(err){}
+        glzRenderStandaloneJsaFinal();
+        return false;
+      };
+    }
+  });
+}
+
+const glzPriorRenderFinal = typeof render==="function" ? render : null;
+if(glzPriorRenderFinal){
+  render=function(){
+    glzPriorRenderFinal();
+    glzRenderStandaloneJsaFinal();
+    glzPatchQuickJsaFormButtonsFinal();
+  };
+}
+
+const glzPriorRenderFormsFinal = typeof renderForms==="function" ? renderForms : null;
+if(glzPriorRenderFormsFinal){
+  renderForms=function(){
+    glzPriorRenderFormsFinal();
+    setTimeout(glzPatchQuickJsaFormButtonsFinal,0);
+    setTimeout(glzRenderStandaloneJsaFinal,0);
+  };
+}
+
+document.addEventListener("DOMContentLoaded",function(){
+  glzPatchQuickJsaFormButtonsFinal();
+  glzRenderStandaloneJsaFinal();
+});
+setTimeout(glzPatchQuickJsaFormButtonsFinal,200);
+setTimeout(glzRenderStandaloneJsaFinal,200);
+setTimeout(glzPatchQuickJsaFormButtonsFinal,1000);
+setTimeout(glzRenderStandaloneJsaFinal,1000);
+/* GLZ_FORCE_VISIBLE_JSA_FIELDS_FINAL_END */
 
 </script><!-- JSA_FIELDS_ENABLED_VERIFIED -->
 </body></html>
