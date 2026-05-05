@@ -1451,9 +1451,83 @@ function render(){
   renderAudit();
   updateSyncStatus();
   try{if(typeof bindSaveButtonsHard==="function")bindSaveButtonsHard()}catch(e){}
-  try{if(typeof glzBindQuickJsaButtons==="function")glzBindQuickJsaButtons()}catch(e){}
+  try{if(typeof glzBindQuickJsaButtons==="function")glzBindQuickJsaButtons()}catch(e){};try{if(typeof glzBindAdminTabs==="function")glzBindAdminTabs()}catch(e){}
 }
 /* GLZ_FILTER_POPULATE_FIX_END */
+
+
+
+/* GLZ_ADMIN_TAB_FIX_START */
+function glzOpenEmployeePanel(){
+  try{
+    panel="employee";
+    const emp=document.getElementById("employeePanel");
+    const admin=document.getElementById("adminPanel");
+    const empTab=document.getElementById("empTab");
+    const adminTab=document.getElementById("adminTab");
+    if(emp)emp.className="card";
+    if(admin)admin.className="card hidden";
+    if(empTab)empTab.className="tab active";
+    if(adminTab)adminTab.className="tab";
+    try{renderReports()}catch(e){}
+  }catch(err){
+    console.error("Employee panel open failed",err);
+  }
+}
+
+function glzOpenAdminPanel(){
+  try{
+    if(!isAdmin()){
+      alert("Only Foreman or Safety Manager can open the Admin Dashboard. Your current role is: "+userRole);
+      return false;
+    }
+    panel="admin";
+    const emp=document.getElementById("employeePanel");
+    const admin=document.getElementById("adminPanel");
+    const empTab=document.getElementById("empTab");
+    const adminTab=document.getElementById("adminTab");
+    if(emp)emp.className="card hidden";
+    if(admin)admin.className="card";
+    if(empTab)empTab.className="tab";
+    if(adminTab)adminTab.className="tab active";
+    try{populateAdminFilters()}catch(e){console.warn(e)}
+    try{renderStats()}catch(e){console.warn(e)}
+    try{renderReports()}catch(e){console.warn(e)}
+    try{renderAudit()}catch(e){console.warn(e)}
+    const reports=document.getElementById("reports");
+    if(reports)reports.scrollIntoView({behavior:"smooth",block:"start"});
+    return true;
+  }catch(err){
+    console.error("Admin panel open failed",err);
+    alert("Admin Dashboard failed to open: "+(err.message||err));
+    return false;
+  }
+}
+
+function glzBindAdminTabs(){
+  const empTab=document.getElementById("empTab");
+  const adminTab=document.getElementById("adminTab");
+  if(empTab){
+    empTab.onclick=function(e){
+      if(e)e.preventDefault();
+      glzOpenEmployeePanel();
+      return false;
+    };
+  }
+  if(adminTab){
+    adminTab.style.display=isAdmin()?"block":"none";
+    adminTab.onclick=function(e){
+      if(e)e.preventDefault();
+      glzOpenAdminPanel();
+      return false;
+    };
+  }
+}
+
+document.addEventListener("DOMContentLoaded",glzBindAdminTabs);
+setTimeout(glzBindAdminTabs,200);
+setTimeout(glzBindAdminTabs,1000);
+/* GLZ_ADMIN_TAB_FIX_END */
 
 </script><!-- JSA_FIELDS_ENABLED_VERIFIED -->
 </body></html>
