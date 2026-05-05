@@ -20,7 +20,12 @@ main{padding:0 18px 18px}.stats{display:grid;grid-template-columns:repeat(6,1fr)
 .ppeBox{border:2px solid #0f172a;border-radius:16px;padding:12px;margin:12px 0;background:#f8fafc}.ppeTitle{font-size:16px;font-weight:900;margin-bottom:6px}.ppeGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.ppeItem{display:flex;gap:8px;align-items:flex-start;background:white;border:1px solid #dbe3ec;border-radius:12px;padding:8px;line-height:1.25}.ppeItem input{width:auto;margin-top:2px}.ppeText small{display:block;color:#64748b;font-weight:600}.filterGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.modalOverlay{position:fixed;inset:0;background:rgba(15,23,42,.72);z-index:9998;display:none;align-items:center;justify-content:center;padding:16px}.modalCard{background:white;border-radius:22px;max-width:760px;width:100%;max-height:86vh;overflow:auto;padding:18px;box-shadow:0 24px 70px rgba(0,0,0,.35)}.detailGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.detailRow{border-bottom:1px solid #e5e7eb;padding:6px 0}.detailKey{font-weight:900}.detailSig{max-width:260px;height:70px;border:1px solid #ccc;background:white}@media(max-width:700px){.filterGrid,.ppeGrid,.detailGrid{grid-template-columns:1fr}}
 .previousTools{border:1px solid var(--line);border-radius:16px;background:#f8fafc;padding:10px;margin:10px 0}.previousTools .bar{margin-top:6px}.editNotice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:8px;margin:8px 0;font-weight:800}.reportSectionTitle{margin:14px 0 8px;padding:8px 10px;border-radius:12px;background:#0f172a;color:white;font-weight:900}
 .reportSectionSub{font-size:12px;color:#64748b;margin:-4px 0 8px}
-.jsaRequiredBox{border:3px solid #0f172a;border-radius:18px;padding:14px;margin:14px 0;background:#eef2ff}.jsaRequiredBox h3{margin:0 0 8px;color:#0f172a}.jsaReqGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.jsaRequiredBox .full{grid-column:1/-1}@media(max-width:700px){.jsaReqGrid{grid-template-columns:1fr}}</style>
+.jsaRequiredBox{border:3px solid #0f172a;border-radius:18px;padding:14px;margin:14px 0;background:#eef2ff}.jsaRequiredBox h3{margin:0 0 8px;color:#0f172a}.jsaReqGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.jsaRequiredBox .full{grid-column:1/-1}@media(max-width:700px){.jsaReqGrid{grid-template-columns:1fr}}.glzStandaloneJsa{border:3px solid #0f172a;border-radius:18px;padding:14px;margin:14px 0;background:#eef2ff}
+.glzStandaloneJsa h3{margin:0 0 8px;color:#0f172a}
+.glzJsaGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.glzJsaGrid .full{grid-column:1/-1}
+@media(max-width:700px){.glzJsaGrid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <div id="loginOverlay" class="login">
@@ -52,39 +57,39 @@ main{padding:0 18px 18px}.stats{display:grid;grid-template-columns:repeat(6,1fr)
 <section class="stats"><div class="stat"><span class="muted" id="sTotal">Total</span><b id="total">0</b></div><div class="stat"><span class="muted" id="sSubmitted">Submitted</span><b id="submitted">0</b></div><div class="stat"><span class="muted" id="sDraft">Drafts</span><b id="drafts">0</b></div><div class="stat"><span class="muted" id="sClosed">Closed</span><b id="closed">0</b></div><div class="stat"><span class="muted">JHAs</span><b id="jhas">0</b></div><div class="stat"><span class="muted">Pending Sync</span><b id="pending">0</b></div></section>
 <section class="grid"><aside class="card"><button id="empTab" class="tab active" onclick="setPanel('employee')">Employee App</button><button id="adminTab" class="tab" onclick="setPanel('admin')">Admin Dashboard</button><h2 id="formsTitle">Forms</h2><div class="forms" id="formButtons"></div><label id="roleLabel">Role</label><input id="roleBox" disabled value="Employee"><p class="muted" id="roleNote">Role loads from Firestore users/{email}.role.</p><p class="muted" id="roleDebugNote">Edit buttons appear only when role is Foreman or Safety Manager.</p><label id="jobsiteLabel">Default Jobsite</label><select id="jobsiteSelect" onchange="selectJobsite()"></select><div class="bar"><input id="newJobsite" placeholder="Add new jobsite"><button class="secondary" onclick="addJobsite()">Add</button><button class="danger" onclick="removeSelectedJobsite()">Remove</button></div><input id="defaultJobsite" placeholder="Selected jobsite" readonly></aside>
 <section class="card" id="employeePanel"><h2 id="formTitle"></h2><p id="formDesc"></p><div id="quickJhaHint" class="muted hidden" style="background:#f8fafc;border:1px solid #dbe3ec;border-radius:14px;padding:10px;margin-bottom:10px">Quick JHA: fill only the essentials, then collect crew signatures below.<br><b>Required for JSA/JHA:</b> Jobsite, crew/workers, task, hazards, controls, PPE, and signature.</div><div id="fields"></div>
-<div id="jsaRequiredSection" class="jsaRequiredBox" style="display:none">
-  <h3>JSA Required Info / Información Requerida</h3>
-  <p class="muted">Complete this section for every Quick Job Safety Analysis.</p>
-  <div class="jsaReqGrid">
+<div id="glzStandaloneJsa" class="glzStandaloneJsa" style="display:none">
+  <h3>Quick Job Safety Analysis / JSA-JHA</h3>
+  <p class="muted">Complete these fields for the Quick Job Analysis report.</p>
+  <div class="glzJsaGrid">
     <div class="full">
       <label>Jobsite / Proyecto</label>
-      <select id="jsaJobsite"></select>
+      <select id="glzJsaJobsite"></select>
       <div class="bar">
-        <input id="jsaNewJobsite" placeholder="Add jobsite / Agregar proyecto">
-        <button class="secondary" type="button" id="jsaAddJobsiteBtn">Add Jobsite</button>
+        <input id="glzJsaNewJobsite" placeholder="Add jobsite / Agregar proyecto">
+        <button class="secondary" type="button" id="glzJsaAddJobsite">Add Jobsite</button>
       </div>
     </div>
     <div class="full">
       <label>Crew / Workers / Cuadrilla</label>
-      <select id="jsaCrewSelect" multiple size="6"></select>
-      <textarea id="jsaCrewText" placeholder="Selected workers appear here; you can also type names manually."></textarea>
+      <select id="glzJsaCrewSelect" multiple size="6"></select>
+      <textarea id="glzJsaCrewText" placeholder="Selected workers appear here, or type workers manually."></textarea>
       <div class="bar">
-        <input id="jsaNewWorkerName" placeholder="Worker name / Nombre">
-        <input id="jsaNewWorkerRole" placeholder="Role/trade optional / Oficio opcional">
-        <button class="secondary" type="button" id="jsaAddWorkerBtn">Save Worker</button>
+        <input id="glzJsaNewWorker" placeholder="Worker name / Nombre">
+        <input id="glzJsaNewWorkerRole" placeholder="Role/trade optional / Oficio opcional">
+        <button class="secondary" type="button" id="glzJsaAddWorker">Save Worker</button>
       </div>
     </div>
     <div class="full">
       <label>Task / Work Being Done / Tarea</label>
-      <textarea id="jsaTask" placeholder="Describe the task / Describa la tarea"></textarea>
+      <textarea id="glzJsaTask" placeholder="Describe task / Describa la tarea"></textarea>
     </div>
     <div>
-      <label>Main Hazards / Peligros Principales</label>
-      <textarea id="jsaHazards" placeholder="List hazards / Liste peligros"></textarea>
+      <label>Main Hazards / Peligros</label>
+      <textarea id="glzJsaHazards" placeholder="List hazards / Liste peligros"></textarea>
     </div>
     <div>
       <label>Controls / Controles</label>
-      <textarea id="jsaControls" placeholder="How hazards will be controlled / Cómo se controlan los peligros"></textarea>
+      <textarea id="glzJsaControls" placeholder="How hazards will be controlled"></textarea>
     </div>
   </div>
 </div>
@@ -661,7 +666,12 @@ function exportCSV(){const rows=[["ID","Form","Status","User","Role","Jobsite","
  .ppeBox{border:2px solid #0f172a;border-radius:16px;padding:12px;margin:12px 0;background:#f8fafc}.ppeTitle{font-size:16px;font-weight:900;margin-bottom:6px}.ppeGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.ppeItem{display:flex;gap:8px;align-items:flex-start;background:white;border:1px solid #dbe3ec;border-radius:12px;padding:8px;line-height:1.25}.ppeItem input{width:auto;margin-top:2px}.ppeText small{display:block;color:#64748b;font-weight:600}.filterGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.modalOverlay{position:fixed;inset:0;background:rgba(15,23,42,.72);z-index:9998;display:none;align-items:center;justify-content:center;padding:16px}.modalCard{background:white;border-radius:22px;max-width:760px;width:100%;max-height:86vh;overflow:auto;padding:18px;box-shadow:0 24px 70px rgba(0,0,0,.35)}.detailGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.detailRow{border-bottom:1px solid #e5e7eb;padding:6px 0}.detailKey{font-weight:900}.detailSig{max-width:260px;height:70px;border:1px solid #ccc;background:white}@media(max-width:700px){.filterGrid,.ppeGrid,.detailGrid{grid-template-columns:1fr}}
 .previousTools{border:1px solid var(--line);border-radius:16px;background:#f8fafc;padding:10px;margin:10px 0}.previousTools .bar{margin-top:6px}.editNotice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:8px;margin:8px 0;font-weight:800}.reportSectionTitle{margin:14px 0 8px;padding:8px 10px;border-radius:12px;background:#0f172a;color:white;font-weight:900}
 .reportSectionSub{font-size:12px;color:#64748b;margin:-4px 0 8px}
-.jsaRequiredBox{border:3px solid #0f172a;border-radius:18px;padding:14px;margin:14px 0;background:#eef2ff}.jsaRequiredBox h3{margin:0 0 8px;color:#0f172a}.jsaReqGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.jsaRequiredBox .full{grid-column:1/-1}@media(max-width:700px){.jsaReqGrid{grid-template-columns:1fr}}</style>
+.jsaRequiredBox{border:3px solid #0f172a;border-radius:18px;padding:14px;margin:14px 0;background:#eef2ff}.jsaRequiredBox h3{margin:0 0 8px;color:#0f172a}.jsaReqGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.jsaRequiredBox .full{grid-column:1/-1}@media(max-width:700px){.jsaReqGrid{grid-template-columns:1fr}}.glzStandaloneJsa{border:3px solid #0f172a;border-radius:18px;padding:14px;margin:14px 0;background:#eef2ff}
+.glzStandaloneJsa h3{margin:0 0 8px;color:#0f172a}
+.glzJsaGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.glzJsaGrid .full{grid-column:1/-1}
+@media(max-width:700px){.glzJsaGrid{grid-template-columns:1fr}}
+</style>
  </head>
  <body>
  <div class="brandHeader">
@@ -1672,6 +1682,159 @@ document.addEventListener("DOMContentLoaded",glzRenderJsaRequiredSection);
 setTimeout(glzRenderJsaRequiredSection,250);
 setTimeout(glzRenderJsaRequiredSection,1000);
 /* GLZ_JSA_VISIBLE_FIELDS_FIX_END */
+
+
+
+/* GLZ_STANDALONE_JSA_FORCE_START */
+function glzIsQuickJsaSelected(){
+  try{
+    if(typeof activeFormId!=="undefined" && activeFormId==="jha")return true;
+    const title=document.getElementById("formTitle");
+    if(title && /JSA|JHA|Job Safety|Hazard/i.test(title.textContent||""))return true;
+  }catch(e){}
+  return false;
+}
+
+function glzWorkerName(w){return String((w&&w.name)?w.name:(w||"")).trim();}
+
+function glzRenderStandaloneJsa(){
+  const box=document.getElementById("glzStandaloneJsa");
+  if(!box)return;
+  const isJsa=glzIsQuickJsaSelected();
+  box.style.display=isJsa?"block":"none";
+  if(!isJsa)return;
+
+  const job=document.getElementById("glzJsaJobsite");
+  if(job){
+    const cur=job.value || (document.getElementById("defaultJobsite")?.value||"");
+    job.innerHTML='<option value="">Select jobsite / Seleccione proyecto</option>'+(state.jobsites||[]).map(function(j){
+      return '<option value="'+escapeHTML(j)+'">'+escapeHTML(j)+'</option>';
+    }).join("");
+    job.value=cur;
+    job.onchange=function(){
+      const d=document.getElementById("defaultJobsite");
+      if(d)d.value=this.value;
+    };
+  }
+
+  const crew=document.getElementById("glzJsaCrewSelect");
+  if(crew){
+    const selected=(document.getElementById("glzJsaCrewText")?.value||"").split(",").map(x=>x.trim()).filter(Boolean);
+    crew.innerHTML=(state.workers||[]).map(function(w){
+      const name=glzWorkerName(w);
+      if(!name)return "";
+      const sel=selected.some(s=>s.toLowerCase()===name.toLowerCase())?"selected":"";
+      return '<option value="'+escapeHTML(name)+'" '+sel+'>'+escapeHTML(name)+'</option>';
+    }).join("");
+    crew.onchange=function(){
+      const txt=document.getElementById("glzJsaCrewText");
+      if(txt)txt.value=[...crew.selectedOptions].map(o=>o.value).join(", ");
+    };
+  }
+
+  const addJob=document.getElementById("glzJsaAddJobsite");
+  if(addJob){
+    addJob.onclick=function(e){
+      if(e)e.preventDefault();
+      const input=document.getElementById("glzJsaNewJobsite");
+      const val=(input?.value||"").trim();
+      if(!val)return alert("Enter a jobsite name.");
+      state.jobsites=state.jobsites||[];
+      if(!state.jobsites.some(j=>j.toLowerCase()===val.toLowerCase()))state.jobsites.push(val);
+      state.jobsites.sort((a,b)=>a.localeCompare(b));
+      persist();
+      input.value="";
+      glzRenderStandaloneJsa();
+      const sel=document.getElementById("glzJsaJobsite");
+      if(sel)sel.value=val;
+      const def=document.getElementById("defaultJobsite");
+      if(def)def.value=val;
+      return false;
+    };
+  }
+
+  const addWorker=document.getElementById("glzJsaAddWorker");
+  if(addWorker){
+    addWorker.onclick=function(e){
+      if(e)e.preventDefault();
+      const name=(document.getElementById("glzJsaNewWorker")?.value||"").trim();
+      const role=(document.getElementById("glzJsaNewWorkerRole")?.value||"").trim();
+      if(!name)return alert("Enter worker name.");
+      const label=role?name+" - "+role:name;
+      state.workers=state.workers||[];
+      if(!state.workers.some(w=>glzWorkerName(w).toLowerCase()===label.toLowerCase())){
+        state.workers.push({name:label,createdAt:new Date().toISOString()});
+        state.workers.sort((a,b)=>glzWorkerName(a).localeCompare(glzWorkerName(b)));
+      }
+      persist();
+      document.getElementById("glzJsaNewWorker").value="";
+      const rb=document.getElementById("glzJsaNewWorkerRole"); if(rb)rb.value="";
+      glzRenderStandaloneJsa();
+      const sel=document.getElementById("glzJsaCrewSelect");
+      if(sel){[...sel.options].forEach(o=>{if(o.value===label)o.selected=true}); if(sel.onchange)sel.onchange();}
+      return false;
+    };
+  }
+}
+
+function jsaStaticValues(){
+  if(!glzIsQuickJsaSelected())return {};
+  return {
+    "Project / Jobsite":(document.getElementById("glzJsaJobsite")?.value||"").trim(),
+    "Crew / Workers":(document.getElementById("glzJsaCrewText")?.value||"").trim(),
+    "Task / Work Being Done":(document.getElementById("glzJsaTask")?.value||"").trim(),
+    "Main Hazards":(document.getElementById("glzJsaHazards")?.value||"").trim(),
+    "Controls / How Hazards Will Be Prevented":(document.getElementById("glzJsaControls")?.value||"").trim()
+  };
+}
+
+function clearJsaStatic(){
+  ["glzJsaTask","glzJsaHazards","glzJsaControls","glzJsaCrewText","glzJsaNewJobsite","glzJsaNewWorker","glzJsaNewWorkerRole"].forEach(id=>{const el=document.getElementById(id);if(el)el.value=""});
+  const job=document.getElementById("glzJsaJobsite"); if(job)job.value="";
+  const crew=document.getElementById("glzJsaCrewSelect"); if(crew)[...crew.options].forEach(o=>o.selected=false);
+}
+
+function saveJsaWorkersFromStatic(){
+  const crew=(document.getElementById("glzJsaCrewText")?.value||"").trim();
+  if(!crew)return;
+  state.workers=state.workers||[];
+  crew.split(",").map(x=>x.trim()).filter(Boolean).forEach(function(name){
+    if(!state.workers.some(w=>glzWorkerName(w).toLowerCase()===name.toLowerCase())){
+      state.workers.push({name:name,createdAt:new Date().toISOString()});
+    }
+  });
+  state.workers.sort((a,b)=>glzWorkerName(a).localeCompare(glzWorkerName(b)));
+  persist();
+}
+
+// Force buttons for Quick JSA form to show section
+function glzPatchJsaFormButtons(){
+  document.querySelectorAll(".formBtn").forEach(function(btn){
+    const text=btn.textContent||"";
+    if(/JSA|JHA|Job Safety|Hazard Analysis/i.test(text)){
+      btn.addEventListener("click",function(){
+        setTimeout(glzRenderStandaloneJsa,50);
+        setTimeout(glzRenderStandaloneJsa,250);
+      });
+    }
+  });
+}
+
+const glzOldRenderStandalone = typeof render==="function" ? render : null;
+if(glzOldRenderStandalone){
+  render=function(){
+    glzOldRenderStandalone();
+    glzRenderStandaloneJsa();
+    glzPatchJsaFormButtons();
+  };
+}
+
+document.addEventListener("DOMContentLoaded",function(){
+  glzRenderStandaloneJsa();
+  glzPatchJsaFormButtons();
+});
+setInterval(glzRenderStandaloneJsa,1000);
+/* GLZ_STANDALONE_JSA_FORCE_END */
 
 </script><!-- JSA_FIELDS_ENABLED_VERIFIED -->
 </body></html>
