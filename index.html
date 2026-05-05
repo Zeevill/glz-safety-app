@@ -52,38 +52,38 @@ main{padding:0 18px 18px}.stats{display:grid;grid-template-columns:repeat(6,1fr)
 <section class="stats"><div class="stat"><span class="muted" id="sTotal">Total</span><b id="total">0</b></div><div class="stat"><span class="muted" id="sSubmitted">Submitted</span><b id="submitted">0</b></div><div class="stat"><span class="muted" id="sDraft">Drafts</span><b id="drafts">0</b></div><div class="stat"><span class="muted" id="sClosed">Closed</span><b id="closed">0</b></div><div class="stat"><span class="muted">JHAs</span><b id="jhas">0</b></div><div class="stat"><span class="muted">Pending Sync</span><b id="pending">0</b></div></section>
 <section class="grid"><aside class="card"><button id="empTab" class="tab active" onclick="setPanel('employee')">Employee App</button><button id="adminTab" class="tab" onclick="setPanel('admin')">Admin Dashboard</button><h2 id="formsTitle">Forms</h2><div class="forms" id="formButtons"></div><label id="roleLabel">Role</label><input id="roleBox" disabled value="Employee"><p class="muted" id="roleNote">Role loads from Firestore users/{email}.role.</p><p class="muted" id="roleDebugNote">Edit buttons appear only when role is Foreman or Safety Manager.</p><label id="jobsiteLabel">Default Jobsite</label><select id="jobsiteSelect" onchange="selectJobsite()"></select><div class="bar"><input id="newJobsite" placeholder="Add new jobsite"><button class="secondary" onclick="addJobsite()">Add</button><button class="danger" onclick="removeSelectedJobsite()">Remove</button></div><input id="defaultJobsite" placeholder="Selected jobsite" readonly></aside>
 <section class="card" id="employeePanel"><h2 id="formTitle"></h2><p id="formDesc"></p><div id="quickJhaHint" class="muted hidden" style="background:#f8fafc;border:1px solid #dbe3ec;border-radius:14px;padding:10px;margin-bottom:10px">Quick JHA: fill only the essentials, then collect crew signatures below.<br><b>Required for JSA/JHA:</b> Jobsite, crew/workers, task, hazards, controls, PPE, and signature.</div><div id="fields"></div>
-<div id="jsaRequiredSection" class="jsaRequiredBox">
+<div id="jsaRequiredSection" class="jsaRequiredBox" style="display:none">
   <h3>JSA Required Info / Información Requerida</h3>
   <p class="muted">Complete this section for every Quick Job Safety Analysis.</p>
   <div class="jsaReqGrid">
     <div class="full">
-      <label>Jobsite / Proyecto <span style="color:#991b1b">*</span></label>
-      <select id="jsaJobsite" onchange="document.getElementById('defaultJobsite').value=this.value"></select>
+      <label>Jobsite / Proyecto</label>
+      <select id="jsaJobsite"></select>
       <div class="bar">
         <input id="jsaNewJobsite" placeholder="Add jobsite / Agregar proyecto">
-        <button class="secondary" type="button" onclick="addJsaJobsite()">Add Jobsite</button>
+        <button class="secondary" type="button" id="jsaAddJobsiteBtn">Add Jobsite</button>
       </div>
     </div>
     <div class="full">
-      <label>Crew / Workers / Cuadrilla <span style="color:#991b1b">*</span></label>
-      <select id="jsaCrewSelect" multiple size="6" onchange="syncJsaCrewText()"></select>
+      <label>Crew / Workers / Cuadrilla</label>
+      <select id="jsaCrewSelect" multiple size="6"></select>
       <textarea id="jsaCrewText" placeholder="Selected workers appear here; you can also type names manually."></textarea>
       <div class="bar">
         <input id="jsaNewWorkerName" placeholder="Worker name / Nombre">
         <input id="jsaNewWorkerRole" placeholder="Role/trade optional / Oficio opcional">
-        <button class="secondary" type="button" onclick="addJsaWorker()">Save Worker</button>
+        <button class="secondary" type="button" id="jsaAddWorkerBtn">Save Worker</button>
       </div>
     </div>
     <div class="full">
-      <label>Task / Work Being Done / Tarea <span style="color:#991b1b">*</span></label>
+      <label>Task / Work Being Done / Tarea</label>
       <textarea id="jsaTask" placeholder="Describe the task / Describa la tarea"></textarea>
     </div>
     <div>
-      <label>Main Hazards / Peligros Principales <span style="color:#991b1b">*</span></label>
+      <label>Main Hazards / Peligros Principales</label>
       <textarea id="jsaHazards" placeholder="List hazards / Liste peligros"></textarea>
     </div>
     <div>
-      <label>Controls / Controles <span style="color:#991b1b">*</span></label>
+      <label>Controls / Controles</label>
       <textarea id="jsaControls" placeholder="How hazards will be controlled / Cómo se controlan los peligros"></textarea>
     </div>
   </div>
@@ -1528,6 +1528,150 @@ document.addEventListener("DOMContentLoaded",glzBindAdminTabs);
 setTimeout(glzBindAdminTabs,200);
 setTimeout(glzBindAdminTabs,1000);
 /* GLZ_ADMIN_TAB_FIX_END */
+
+
+
+/* GLZ_JSA_VISIBLE_FIELDS_FIX_START */
+function glzIsJsaActive(){
+  try{return typeof activeForm==="function" && activeForm().id==="jha"}catch(e){return false}
+}
+
+function glzWorkerLabel(w){
+  return String((w && w.name) ? w.name : (w || "")).trim();
+}
+
+function glzRenderJsaRequiredSection(){
+  const section=document.getElementById("jsaRequiredSection");
+  if(!section)return;
+  const isJsa=glzIsJsaActive();
+  section.style.display=isJsa ? "block" : "none";
+  if(!isJsa)return;
+
+  const jobSel=document.getElementById("jsaJobsite");
+  if(jobSel){
+    const current=jobSel.value || (document.getElementById("defaultJobsite")?.value||"");
+    jobSel.innerHTML='<option value="">Select jobsite / Seleccione proyecto</option>'+(state.jobsites||[]).map(function(j){
+      return '<option value="'+escapeHTML(j)+'">'+escapeHTML(j)+'</option>';
+    }).join("");
+    jobSel.value=current;
+    jobSel.onchange=function(){
+      const def=document.getElementById("defaultJobsite");
+      if(def)def.value=this.value;
+    };
+  }
+
+  const crewSel=document.getElementById("jsaCrewSelect");
+  if(crewSel){
+    const current=(document.getElementById("jsaCrewText")?.value||"").split(",").map(x=>x.trim()).filter(Boolean);
+    crewSel.innerHTML=(state.workers||[]).map(function(w){
+      const label=glzWorkerLabel(w);
+      if(!label)return "";
+      const selected=current.some(c=>c.toLowerCase()===label.toLowerCase()) ? "selected" : "";
+      return '<option value="'+escapeHTML(label)+'" '+selected+'>'+escapeHTML(label)+'</option>';
+    }).join("");
+    crewSel.onchange=function(){
+      const txt=document.getElementById("jsaCrewText");
+      if(txt)txt.value=[...crewSel.selectedOptions].map(o=>o.value).join(", ");
+    };
+  }
+
+  const addJob=document.getElementById("jsaAddJobsiteBtn");
+  if(addJob){
+    addJob.onclick=function(e){
+      if(e)e.preventDefault();
+      const input=document.getElementById("jsaNewJobsite");
+      const val=(input?.value||"").trim();
+      if(!val)return alert("Enter a jobsite name.");
+      state.jobsites=state.jobsites||[];
+      if(!state.jobsites.some(j=>j.toLowerCase()===val.toLowerCase()))state.jobsites.push(val);
+      state.jobsites.sort((a,b)=>a.localeCompare(b));
+      persist();
+      input.value="";
+      glzRenderJsaRequiredSection();
+      const sel=document.getElementById("jsaJobsite");
+      if(sel)sel.value=val;
+      const def=document.getElementById("defaultJobsite");
+      if(def)def.value=val;
+      return false;
+    };
+  }
+
+  const addWorker=document.getElementById("jsaAddWorkerBtn");
+  if(addWorker){
+    addWorker.onclick=function(e){
+      if(e)e.preventDefault();
+      const name=(document.getElementById("jsaNewWorkerName")?.value||"").trim();
+      const role=(document.getElementById("jsaNewWorkerRole")?.value||"").trim();
+      if(!name)return alert("Enter worker name.");
+      const label=role ? name+" - "+role : name;
+      state.workers=state.workers||[];
+      if(!state.workers.some(w=>glzWorkerLabel(w).toLowerCase()===label.toLowerCase())){
+        state.workers.push({name:label,createdAt:new Date().toISOString()});
+        state.workers.sort((a,b)=>glzWorkerLabel(a).localeCompare(glzWorkerLabel(b)));
+      }
+      persist();
+      document.getElementById("jsaNewWorkerName").value="";
+      const roleBox=document.getElementById("jsaNewWorkerRole"); if(roleBox)roleBox.value="";
+      glzRenderJsaRequiredSection();
+      const sel=document.getElementById("jsaCrewSelect");
+      if(sel){[...sel.options].forEach(o=>{if(o.value===label)o.selected=true}); sel.onchange();}
+      return false;
+    };
+  }
+}
+
+function jsaStaticValues(){
+  if(!glzIsJsaActive())return {};
+  return {
+    "Project / Jobsite":(document.getElementById("jsaJobsite")?.value||"").trim(),
+    "Crew / Workers":(document.getElementById("jsaCrewText")?.value||"").trim(),
+    "Task / Work Being Done":(document.getElementById("jsaTask")?.value||"").trim(),
+    "Main Hazards":(document.getElementById("jsaHazards")?.value||"").trim(),
+    "Controls / How Hazards Will Be Prevented":(document.getElementById("jsaControls")?.value||"").trim()
+  };
+}
+
+function clearJsaStatic(){
+  ["jsaTask","jsaHazards","jsaControls","jsaCrewText","jsaNewJobsite","jsaNewWorkerName","jsaNewWorkerRole"].forEach(id=>{const el=document.getElementById(id);if(el)el.value=""});
+  const job=document.getElementById("jsaJobsite");if(job)job.value="";
+  const crew=document.getElementById("jsaCrewSelect");if(crew)[...crew.options].forEach(o=>o.selected=false);
+}
+
+function saveJsaWorkersFromStatic(){
+  const crew=(document.getElementById("jsaCrewText")?.value||"").trim();
+  if(!crew)return;
+  state.workers=state.workers||[];
+  crew.split(",").map(x=>x.trim()).filter(Boolean).forEach(name=>{
+    if(!state.workers.some(w=>glzWorkerLabel(w).toLowerCase()===name.toLowerCase())){
+      state.workers.push({name,createdAt:new Date().toISOString()});
+    }
+  });
+  state.workers.sort((a,b)=>glzWorkerLabel(a).localeCompare(glzWorkerLabel(b)));
+  persist();
+}
+
+// Override form rendering only to ensure JSA section is toggled after any form change.
+const glzOriginalRender = typeof render==="function" ? render : null;
+if(glzOriginalRender){
+  render=function(){
+    glzOriginalRender();
+    glzRenderJsaRequiredSection();
+  };
+}
+
+// Also patch form buttons after renderForms creates them.
+const glzOriginalRenderForms = typeof renderForms==="function" ? renderForms : null;
+if(glzOriginalRenderForms){
+  renderForms=function(){
+    glzOriginalRenderForms();
+    setTimeout(glzRenderJsaRequiredSection,0);
+  };
+}
+
+document.addEventListener("DOMContentLoaded",glzRenderJsaRequiredSection);
+setTimeout(glzRenderJsaRequiredSection,250);
+setTimeout(glzRenderJsaRequiredSection,1000);
+/* GLZ_JSA_VISIBLE_FIELDS_FIX_END */
 
 </script><!-- JSA_FIELDS_ENABLED_VERIFIED -->
 </body></html>
