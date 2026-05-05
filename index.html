@@ -57,44 +57,8 @@ main{padding:0 18px 18px}.stats{display:grid;grid-template-columns:repeat(6,1fr)
 <section class="stats"><div class="stat"><span class="muted" id="sTotal">Total</span><b id="total">0</b></div><div class="stat"><span class="muted" id="sSubmitted">Submitted</span><b id="submitted">0</b></div><div class="stat"><span class="muted" id="sDraft">Drafts</span><b id="drafts">0</b></div><div class="stat"><span class="muted" id="sClosed">Closed</span><b id="closed">0</b></div><div class="stat"><span class="muted">JHAs</span><b id="jhas">0</b></div><div class="stat"><span class="muted">Pending Sync</span><b id="pending">0</b></div></section>
 <section class="grid"><aside class="card"><button id="empTab" class="tab active" onclick="setPanel('employee')">Employee App</button><button id="adminTab" class="tab" onclick="setPanel('admin')">Admin Dashboard</button><h2 id="formsTitle">Forms</h2><div class="forms" id="formButtons"></div><label id="roleLabel">Role</label><input id="roleBox" disabled value="Employee"><p class="muted" id="roleNote">Role loads from Firestore users/{email}.role.</p><p class="muted" id="roleDebugNote">Edit buttons appear only when role is Foreman or Safety Manager.</p><label id="jobsiteLabel">Default Jobsite</label><select id="jobsiteSelect" onchange="selectJobsite()"></select><div class="bar"><input id="newJobsite" placeholder="Add new jobsite"><button class="secondary" onclick="addJobsite()">Add</button><button class="danger" onclick="removeSelectedJobsite()">Remove</button></div><input id="defaultJobsite" placeholder="Selected jobsite" readonly></aside>
 <section class="card" id="employeePanel"><h2 id="formTitle"></h2><p id="formDesc"></p><div id="quickJhaHint" class="muted hidden" style="background:#f8fafc;border:1px solid #dbe3ec;border-radius:14px;padding:10px;margin-bottom:10px">Quick JHA: fill only the essentials, then collect crew signatures below.<br><b>Required for JSA/JHA:</b> Jobsite, crew/workers, task, hazards, controls, PPE, and signature.</div><div id="fields"></div>
-<div id="glzStandaloneJsa" class="glzStandaloneJsa" style="display:none">
-  <h3>Quick Job Safety Analysis / JSA-JHA</h3>
-  <p class="muted">Complete these fields for the Quick Job Analysis report.</p>
-  <div class="glzJsaGrid">
-    <div class="full">
-      <label>Jobsite / Proyecto</label>
-      <select id="glzJsaJobsite"></select>
-      <div class="bar">
-        <input id="glzJsaNewJobsite" placeholder="Add jobsite / Agregar proyecto">
-        <button class="secondary" type="button" id="glzJsaAddJobsite">Add Jobsite</button>
-      </div>
-    </div>
-    <div class="full">
-      <label>Crew / Workers / Cuadrilla</label>
-      <select id="glzJsaCrewSelect" multiple size="6"></select>
-      <textarea id="glzJsaCrewText" placeholder="Selected workers appear here, or type workers manually."></textarea>
-      <div class="bar">
-        <input id="glzJsaNewWorker" placeholder="Worker name / Nombre">
-        <input id="glzJsaNewWorkerRole" placeholder="Role/trade optional / Oficio opcional">
-        <button class="secondary" type="button" id="glzJsaAddWorker">Save Worker</button>
-      </div>
-    </div>
-    <div class="full">
-      <label>Task / Work Being Done / Tarea</label>
-      <textarea id="glzJsaTask" placeholder="Describe task / Describa la tarea"></textarea>
-    </div>
-    <div>
-      <label>Main Hazards / Peligros</label>
-      <textarea id="glzJsaHazards" placeholder="List hazards / Liste peligros"></textarea>
-    </div>
-    <div>
-      <label>Controls / Controles</label>
-      <textarea id="glzJsaControls" placeholder="How hazards will be controlled"></textarea>
-    </div>
-  </div>
-</div>
 <label id="photoLabel">Photo / Attachment Reference</label><input id="photoName" placeholder="Example: photo-001.jpg"><label>iPad Camera / Photo File</label><input id="photoFile" type="file" accept="image/*" capture="environment">
-<div id="glzStandaloneJsa" class="glzStandaloneJsa" style="display:block">
+<div id="glzStandaloneJsa" class="glzStandaloneJsa" style="display:none">
   <h3>Quick Job Safety Analysis / JSA-JHA</h3>
   <p class="muted">Complete these fields for the Quick Job Safety Analysis report.</p>
   <div class="glzJsaGrid">
@@ -113,7 +77,7 @@ main{padding:0 18px 18px}.stats{display:grid;grid-template-columns:repeat(6,1fr)
       <div class="bar">
         <input id="glzJsaNewWorker" placeholder="Worker name / Nombre">
         <input id="glzJsaNewWorkerRole" placeholder="Role/trade optional / Oficio opcional">
-        <button class="secondary" type="button" id="glzJsaAddWorker">Save Worker</button>
+        <button class="secondary" type="button" id="glzJsaAddWorker">Save Worker</button><button class="danger" type="button" id="glzJsaRemoveWorker">Remove Selected</button>
       </div>
     </div>
     <div class="full">
@@ -164,7 +128,7 @@ const firebaseConfig={apiKey:"AIzaSyAVz16lIIdpQviitSFA6f2FfzlNkp3iZI8",authDomai
 const STORAGE_KEY="glz_prod_safety_multi_sig_v1";let state=loadLocal(),lang=localStorage.getItem("glz_lang")||"en",panel="employee",activeFormId="incident";let auth=null,db=null,currentUser=null,userRole="Employee",syncing=false,firebaseReady=false,offlineMode=false;
 const T={en:{title:"Mobile Safety Workflow",sub:"Production version: login-first, offline-safe, bilingual, JHA-focused, cloud-sync ready.",forms:"Forms",role:"Role",jobsite:"Default Jobsite",submit:"Submit Report",draft:"Save Draft",clear:"Clear",dash:"Supervisor Dashboard",admin:"Admin Dashboard",adminDesc:"Review, close, delete, and export records.",total:"Total",submitted:"Submitted",drafts:"Drafts",closed:"Closed",loginRequired:"Login required",synced:"Online • Synced",pending:"Online • Pending Sync",offline:"Offline • Saved on iPad",noReports:"No saved reports yet.",close:"Approve / Close",del:"Delete"},es:{title:"Sistema Móvil de Seguridad",sub:"Versión de producción: login primero, segura sin internet, bilingüe, enfocada en JHA y lista para sincronización.",forms:"Formularios",role:"Rol",jobsite:"Proyecto / Sitio",submit:"Enviar Reporte",draft:"Guardar Borrador",clear:"Limpiar",dash:"Panel del Supervisor",admin:"Panel Administrativo",adminDesc:"Revise, cierre, elimine y exporte registros.",total:"Total",submitted:"Enviados",drafts:"Borradores",closed:"Cerrados",loginRequired:"Inicio requerido",synced:"En línea • Sincronizado",pending:"En línea • Pendiente",offline:"Sin internet • Guardado en iPad",noReports:"No hay reportes guardados.",close:"Aprobar / Cerrar",del:"Eliminar"}};
 const forms=[{id:"incident",icon:"⚠️",en:{title:"Incident / Injury Report",desc:"Injuries, near misses, damage, witnesses, and corrective action.",fields:["Employee / Reporter Name","Employee ID","Date","Jobsite / Location","Incident Type","Description of What Happened","Injury / Damage Details","Witnesses","Immediate Corrective Action","Supervisor Notified","Follow-Up Required"]},es:{title:"Reporte de Incidente / Lesión",desc:"Lesiones, casi accidentes, daños, testigos y acciones correctivas.",fields:["Nombre del Empleado / Reportante","ID del Empleado","Fecha","Proyecto / Ubicación","Tipo de Incidente","Descripción de lo Ocurrido","Detalles de Lesión / Daño","Testigos","Acción Correctiva Inmediata","Supervisor Notificado","Seguimiento Requerido"]}},{id:"inspection",icon:"✅",en:{title:"Jobsite Safety Inspection",desc:"Daily or weekly safety inspection checklist.",fields:["Inspector Name","Date","Project / Jobsite","PPE Compliance","Housekeeping","Tools and Equipment","Electrical Safety","Fall Protection","Ladders / Scaffolds","Corrective Actions Required","Supervisor Review"]},es:{title:"Inspección de Seguridad",desc:"Lista diaria o semanal de inspección.",fields:["Nombre del Inspector","Fecha","Proyecto / Sitio","Cumplimiento de EPP","Orden y Limpieza","Herramientas y Equipo","Seguridad Eléctrica","Protección Contra Caídas","Escaleras / Andamios","Acciones Correctivas Requeridas","Revisión del Supervisor"]}},{id:"toolbox",icon:"👥",en:{title:"Toolbox Talk Attendance",desc:"Safety meeting topic, attendees, and follow-up.",fields:["Presenter Name","Date","Topic","Jobsite","Key Discussion Points","Employee Names / Signatures","Questions Raised","Follow-Up Items"]},es:{title:"Plática de Seguridad / Asistencia",desc:"Tema, asistentes y seguimiento.",fields:["Nombre del Presentador","Fecha","Tema","Proyecto","Puntos Principales","Nombres / Firmas","Preguntas","Pendientes"]}},{id:"scissor",icon:"🛗",en:{title:"Scissor Lift Pre-Use Inspection",desc:"Controls, rails, emergency stop, tires, leaks, and work area.",fields:["Operator Name","Date","Equipment ID / Serial Number","Model / Manufacturer","Ground Controls Functional","Platform Controls Functional","Emergency Stop Tested","Guardrails / Gates Secure","Tires / Wheels Condition","Battery / Fuel / Hydraulic Leaks","Work Area Hazards","Defects Found","Removed From Service?","Supervisor Approval"]},es:{title:"Inspección Pre-Uso de Scissor Lift",desc:"Controles, barandales, paro de emergencia, llantas, fugas y área.",fields:["Nombre del Operador","Fecha","ID / Número de Serie","Modelo / Fabricante","Controles de Piso Funcionan","Controles de Plataforma Funcionan","Paro de Emergencia Probado","Barandales / Puertas Seguras","Condición de Llantas","Batería / Combustible / Fugas","Peligros en el Área","Defectos Encontrados","¿Retirado de Servicio?","Aprobación del Supervisor"]}},{id:"jha",icon:"🧰",en:{title:"Quick Job Safety Analysis (JSA/JHA)",desc:"Fast field JSA: jobsite, crew, task, hazards, controls, PPE, and signatures.",fields:["Date","Project / Jobsite","Crew / Workers","Task / Work Being Done","Main Hazards","Controls / How Hazards Will Be Prevented","Tools / Equipment"]},es:{title:"JSA/JHA Rápido - Análisis de Seguridad",desc:"JSA de campo: proyecto, cuadrilla, tarea, peligros, controles, EPP y firmas.",fields:["Fecha","Proyecto / Sitio","Cuadrilla / Trabajadores","Tarea / Trabajo a Realizar","Peligros Principales","Controles / Cómo se Prevendrán los Peligros","Herramientas / Equipo"]}}];
-function loadLocal(){try{const s=JSON.parse(localStorage.getItem(STORAGE_KEY))||{};return{reports:s.reports||[],audit:s.audit||[],hiddenReports:s.hiddenReports||{},jobsites:s.jobsites||[],workers:s.workers||[]}}catch{return{reports:[],audit:[],hiddenReports:{},jobsites:[],workers:[]}}}function persist(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}function id(){return"GLZ-"+Date.now()+"-"+Math.floor(Math.random()*99999)}function tr(){return T[lang]}function setStatus(m){document.getElementById("syncStatus").textContent=m}function setFirebaseStatus(m){const el=document.getElementById("firebaseStatus");if(el)el.textContent=m}function isAdmin(){return userRole==="Safety Manager"||userRole==="Foreman"}function online(){return navigator.onLine!==false}function activeForm(){return forms.find(f=>f.id===activeFormId)||forms[0]}
+function loadLocal(){try{const s=JSON.parse(localStorage.getItem(STORAGE_KEY))||{};return{reports:s.reports||[],audit:s.audit||[],hiddenReports:s.hiddenReports||{},jobsites:s.jobsites||[],workers:s.workers||[],crewByJobsite:s.crewByJobsite||{}}}catch{return{reports:[],audit:[],hiddenReports:{},jobsites:[],workers:[],crewByJobsite:{}}}}function persist(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}function id(){return"GLZ-"+Date.now()+"-"+Math.floor(Math.random()*99999)}function tr(){return T[lang]}function setStatus(m){document.getElementById("syncStatus").textContent=m}function setFirebaseStatus(m){const el=document.getElementById("firebaseStatus");if(el)el.textContent=m}function isAdmin(){return userRole==="Safety Manager"||userRole==="Foreman"}function online(){return navigator.onLine!==false}function activeForm(){return forms.find(f=>f.id===activeFormId)||forms[0]}
 
 const PPE_OPTIONS=[
  {en:"Hard Hat",es:"Casco"},
@@ -1577,304 +1541,19 @@ setTimeout(glzBindAdminTabs,1000);
 
 
 
-/* GLZ_JSA_VISIBLE_FIELDS_FIX_START */
-function glzIsJsaActive(){
-  try{return typeof activeForm==="function" && activeForm().id==="jha"}catch(e){return false}
-}
-
-function glzWorkerLabel(w){
-  return String((w && w.name) ? w.name : (w || "")).trim();
-}
-
-function glzRenderJsaRequiredSection(){
-  const section=document.getElementById("jsaRequiredSection");
-  if(!section)return;
-  const isJsa=glzIsJsaActive();
-  section.style.display=isJsa ? "block" : "none";
-  if(!isJsa)return;
-
-  const jobSel=document.getElementById("jsaJobsite");
-  if(jobSel){
-    const current=jobSel.value || (document.getElementById("defaultJobsite")?.value||"");
-    jobSel.innerHTML='<option value="">Select jobsite / Seleccione proyecto</option>'+(state.jobsites||[]).map(function(j){
-      return '<option value="'+escapeHTML(j)+'">'+escapeHTML(j)+'</option>';
-    }).join("");
-    jobSel.value=current;
-    jobSel.onchange=function(){
-      const def=document.getElementById("defaultJobsite");
-      if(def)def.value=this.value;
-    };
-  }
-
-  const crewSel=document.getElementById("jsaCrewSelect");
-  if(crewSel){
-    const current=(document.getElementById("jsaCrewText")?.value||"").split(",").map(x=>x.trim()).filter(Boolean);
-    crewSel.innerHTML=(state.workers||[]).map(function(w){
-      const label=glzWorkerLabel(w);
-      if(!label)return "";
-      const selected=current.some(c=>c.toLowerCase()===label.toLowerCase()) ? "selected" : "";
-      return '<option value="'+escapeHTML(label)+'" '+selected+'>'+escapeHTML(label)+'</option>';
-    }).join("");
-    crewSel.onchange=function(){
-      const txt=document.getElementById("jsaCrewText");
-      if(txt)txt.value=[...crewSel.selectedOptions].map(o=>o.value).join(", ");
-    };
-  }
-
-  const addJob=document.getElementById("jsaAddJobsiteBtn");
-  if(addJob){
-    addJob.onclick=function(e){
-      if(e)e.preventDefault();
-      const input=document.getElementById("jsaNewJobsite");
-      const val=(input?.value||"").trim();
-      if(!val)return alert("Enter a jobsite name.");
-      state.jobsites=state.jobsites||[];
-      if(!state.jobsites.some(j=>j.toLowerCase()===val.toLowerCase()))state.jobsites.push(val);
-      state.jobsites.sort((a,b)=>a.localeCompare(b));
-      persist();
-      input.value="";
-      glzRenderJsaRequiredSection();
-      const sel=document.getElementById("jsaJobsite");
-      if(sel)sel.value=val;
-      const def=document.getElementById("defaultJobsite");
-      if(def)def.value=val;
-      return false;
-    };
-  }
-
-  const addWorker=document.getElementById("jsaAddWorkerBtn");
-  if(addWorker){
-    addWorker.onclick=function(e){
-      if(e)e.preventDefault();
-      const name=(document.getElementById("jsaNewWorkerName")?.value||"").trim();
-      const role=(document.getElementById("jsaNewWorkerRole")?.value||"").trim();
-      if(!name)return alert("Enter worker name.");
-      const label=role ? name+" - "+role : name;
-      state.workers=state.workers||[];
-      if(!state.workers.some(w=>glzWorkerLabel(w).toLowerCase()===label.toLowerCase())){
-        state.workers.push({name:label,createdAt:new Date().toISOString()});
-        state.workers.sort((a,b)=>glzWorkerLabel(a).localeCompare(glzWorkerLabel(b)));
-      }
-      persist();
-      document.getElementById("jsaNewWorkerName").value="";
-      const roleBox=document.getElementById("jsaNewWorkerRole"); if(roleBox)roleBox.value="";
-      glzRenderJsaRequiredSection();
-      const sel=document.getElementById("jsaCrewSelect");
-      if(sel){[...sel.options].forEach(o=>{if(o.value===label)o.selected=true}); sel.onchange();}
-      return false;
-    };
-  }
-}
-
-function jsaStaticValues(){
-  if(!glzIsJsaActive())return {};
-  return {
-    "Project / Jobsite":(document.getElementById("jsaJobsite")?.value||"").trim(),
-    "Crew / Workers":(document.getElementById("jsaCrewText")?.value||"").trim(),
-    "Task / Work Being Done":(document.getElementById("jsaTask")?.value||"").trim(),
-    "Main Hazards":(document.getElementById("jsaHazards")?.value||"").trim(),
-    "Controls / How Hazards Will Be Prevented":(document.getElementById("jsaControls")?.value||"").trim()
-  };
-}
-
-function clearJsaStatic(){
-  ["jsaTask","jsaHazards","jsaControls","jsaCrewText","jsaNewJobsite","jsaNewWorkerName","jsaNewWorkerRole"].forEach(id=>{const el=document.getElementById(id);if(el)el.value=""});
-  const job=document.getElementById("jsaJobsite");if(job)job.value="";
-  const crew=document.getElementById("jsaCrewSelect");if(crew)[...crew.options].forEach(o=>o.selected=false);
-}
-
-function saveJsaWorkersFromStatic(){
-  const crew=(document.getElementById("jsaCrewText")?.value||"").trim();
-  if(!crew)return;
-  state.workers=state.workers||[];
-  crew.split(",").map(x=>x.trim()).filter(Boolean).forEach(name=>{
-    if(!state.workers.some(w=>glzWorkerLabel(w).toLowerCase()===name.toLowerCase())){
-      state.workers.push({name,createdAt:new Date().toISOString()});
-    }
-  });
-  state.workers.sort((a,b)=>glzWorkerLabel(a).localeCompare(glzWorkerLabel(b)));
-  persist();
-}
-
-// Override form rendering only to ensure JSA section is toggled after any form change.
-const glzOriginalRender = typeof render==="function" ? render : null;
-if(glzOriginalRender){
-  render=function(){
-    glzOriginalRender();
-    glzRenderJsaRequiredSection();
-  };
-}
-
-// Also patch form buttons after renderForms creates them.
-const glzOriginalRenderForms = typeof renderForms==="function" ? renderForms : null;
-if(glzOriginalRenderForms){
-  renderForms=function(){
-    glzOriginalRenderForms();
-    setTimeout(glzRenderJsaRequiredSection,0);
-  };
-}
-
-document.addEventListener("DOMContentLoaded",glzRenderJsaRequiredSection);
-setTimeout(glzRenderJsaRequiredSection,250);
-setTimeout(glzRenderJsaRequiredSection,1000);
-/* GLZ_JSA_VISIBLE_FIELDS_FIX_END */
 
 
 
-/* GLZ_STANDALONE_JSA_FORCE_START */
-function glzIsQuickJsaSelected(){
-  try{
-    if(typeof activeFormId!=="undefined" && activeFormId==="jha")return true;
-    const title=document.getElementById("formTitle");
-    if(title && /JSA|JHA|Job Safety|Hazard/i.test(title.textContent||""))return true;
-  }catch(e){}
-  return false;
-}
-
-function glzWorkerName(w){return String((w&&w.name)?w.name:(w||"")).trim();}
-
-function glzRenderStandaloneJsa(){
-  const box=document.getElementById("glzStandaloneJsa");
-  if(!box)return;
-  const isJsa=glzIsQuickJsaSelected();
-  box.style.display=isJsa?"block":"none";
-  if(!isJsa)return;
-
-  const job=document.getElementById("glzJsaJobsite");
-  if(job){
-    const cur=job.value || (document.getElementById("defaultJobsite")?.value||"");
-    job.innerHTML='<option value="">Select jobsite / Seleccione proyecto</option>'+(state.jobsites||[]).map(function(j){
-      return '<option value="'+escapeHTML(j)+'">'+escapeHTML(j)+'</option>';
-    }).join("");
-    job.value=cur;
-    job.onchange=function(){
-      const d=document.getElementById("defaultJobsite");
-      if(d)d.value=this.value;
-    };
-  }
-
-  const crew=document.getElementById("glzJsaCrewSelect");
-  if(crew){
-    const selected=(document.getElementById("glzJsaCrewText")?.value||"").split(",").map(x=>x.trim()).filter(Boolean);
-    crew.innerHTML=(state.workers||[]).map(function(w){
-      const name=glzWorkerName(w);
-      if(!name)return "";
-      const sel=selected.some(s=>s.toLowerCase()===name.toLowerCase())?"selected":"";
-      return '<option value="'+escapeHTML(name)+'" '+sel+'>'+escapeHTML(name)+'</option>';
-    }).join("");
-    crew.onchange=function(){
-      const txt=document.getElementById("glzJsaCrewText");
-      if(txt)txt.value=[...crew.selectedOptions].map(o=>o.value).join(", ");
-    };
-  }
-
-  const addJob=document.getElementById("glzJsaAddJobsite");
-  if(addJob){
-    addJob.onclick=function(e){
-      if(e)e.preventDefault();
-      const input=document.getElementById("glzJsaNewJobsite");
-      const val=(input?.value||"").trim();
-      if(!val)return alert("Enter a jobsite name.");
-      state.jobsites=state.jobsites||[];
-      if(!state.jobsites.some(j=>j.toLowerCase()===val.toLowerCase()))state.jobsites.push(val);
-      state.jobsites.sort((a,b)=>a.localeCompare(b));
-      persist();
-      input.value="";
-      glzRenderStandaloneJsa();
-      const sel=document.getElementById("glzJsaJobsite");
-      if(sel)sel.value=val;
-      const def=document.getElementById("defaultJobsite");
-      if(def)def.value=val;
-      return false;
-    };
-  }
-
-  const addWorker=document.getElementById("glzJsaAddWorker");
-  if(addWorker){
-    addWorker.onclick=function(e){
-      if(e)e.preventDefault();
-      const name=(document.getElementById("glzJsaNewWorker")?.value||"").trim();
-      const role=(document.getElementById("glzJsaNewWorkerRole")?.value||"").trim();
-      if(!name)return alert("Enter worker name.");
-      const label=role?name+" - "+role:name;
-      state.workers=state.workers||[];
-      if(!state.workers.some(w=>glzWorkerName(w).toLowerCase()===label.toLowerCase())){
-        state.workers.push({name:label,createdAt:new Date().toISOString()});
-        state.workers.sort((a,b)=>glzWorkerName(a).localeCompare(glzWorkerName(b)));
-      }
-      persist();
-      document.getElementById("glzJsaNewWorker").value="";
-      const rb=document.getElementById("glzJsaNewWorkerRole"); if(rb)rb.value="";
-      glzRenderStandaloneJsa();
-      const sel=document.getElementById("glzJsaCrewSelect");
-      if(sel){[...sel.options].forEach(o=>{if(o.value===label)o.selected=true}); if(sel.onchange)sel.onchange();}
-      return false;
-    };
-  }
-}
-
-function jsaStaticValues(){
-  if(!glzIsQuickJsaSelected())return {};
-  return {
-    "Project / Jobsite":(document.getElementById("glzJsaJobsite")?.value||"").trim(),
-    "Crew / Workers":(document.getElementById("glzJsaCrewText")?.value||"").trim(),
-    "Task / Work Being Done":(document.getElementById("glzJsaTask")?.value||"").trim(),
-    "Main Hazards":(document.getElementById("glzJsaHazards")?.value||"").trim(),
-    "Controls / How Hazards Will Be Prevented":(document.getElementById("glzJsaControls")?.value||"").trim()
-  };
-}
-
-function clearJsaStatic(){
-  ["glzJsaTask","glzJsaHazards","glzJsaControls","glzJsaCrewText","glzJsaNewJobsite","glzJsaNewWorker","glzJsaNewWorkerRole"].forEach(id=>{const el=document.getElementById(id);if(el)el.value=""});
-  const job=document.getElementById("glzJsaJobsite"); if(job)job.value="";
-  const crew=document.getElementById("glzJsaCrewSelect"); if(crew)[...crew.options].forEach(o=>o.selected=false);
-}
-
-function saveJsaWorkersFromStatic(){
-  const crew=(document.getElementById("glzJsaCrewText")?.value||"").trim();
-  if(!crew)return;
-  state.workers=state.workers||[];
-  crew.split(",").map(x=>x.trim()).filter(Boolean).forEach(function(name){
-    if(!state.workers.some(w=>glzWorkerName(w).toLowerCase()===name.toLowerCase())){
-      state.workers.push({name:name,createdAt:new Date().toISOString()});
-    }
-  });
-  state.workers.sort((a,b)=>glzWorkerName(a).localeCompare(glzWorkerName(b)));
-  persist();
-}
-
-// Force buttons for Quick JSA form to show section
-function glzPatchJsaFormButtons(){
-  document.querySelectorAll(".formBtn").forEach(function(btn){
-    const text=btn.textContent||"";
-    if(/JSA|JHA|Job Safety|Hazard Analysis/i.test(text)){
-      btn.addEventListener("click",function(){
-        setTimeout(glzRenderStandaloneJsa,50);
-        setTimeout(glzRenderStandaloneJsa,250);
-      });
-    }
-  });
-}
-
-const glzOldRenderStandalone = typeof render==="function" ? render : null;
-if(glzOldRenderStandalone){
-  render=function(){
-    glzOldRenderStandalone();
-    glzRenderStandaloneJsa();
-    glzPatchJsaFormButtons();
-  };
-}
-
-document.addEventListener("DOMContentLoaded",function(){
-  glzRenderStandaloneJsa();
-  glzPatchJsaFormButtons();
-});
-setInterval(glzRenderStandaloneJsa,1000);
-/* GLZ_STANDALONE_JSA_FORCE_END */
 
 
 
-/* GLZ_FORCE_VISIBLE_JSA_FIELDS_FINAL_START */
+
+
+
+
+
+
+/* GLZ_SINGLE_JSA_SECTION_START */
 function glzIsQuickJsaSelectedFinal(){
   try{
     if(typeof activeFormId!=="undefined" && activeFormId==="jha")return true;
@@ -1996,50 +1675,134 @@ function clearJsaStatic(){
   const crew=document.getElementById("glzJsaCrewSelect"); if(crew)[...crew.options].forEach(o=>o.selected=false);
 }
 
-// Hook into the actual form buttons and render cycle.
-function glzPatchQuickJsaFormButtonsFinal(){
-  document.querySelectorAll(".formBtn").forEach(function(btn){
-    const text=btn.textContent||"";
-    if(/JSA|JHA|Job Safety|Hazard Analysis|Quick Job/i.test(text)){
-      btn.onclick=function(e){
+document.addEventListener("DOMContentLoaded",glzRenderStandaloneJsaFinal);
+setTimeout(glzRenderStandaloneJsaFinal,200);
+setTimeout(glzRenderStandaloneJsaFinal,1000);
+/* GLZ_SINGLE_JSA_SECTION_END */
+
+
+
+/* GLZ_CREW_BY_JOBSITE_AUTOFILL_START */
+function glzGetSelectedCrewList(){
+  const txt=(document.getElementById("glzJsaCrewText")?.value||"").trim();
+  if(txt)return txt.split(",").map(x=>x.trim()).filter(Boolean);
+  const sel=document.getElementById("glzJsaCrewSelect");
+  if(sel)return [...sel.selectedOptions].map(o=>o.value).filter(Boolean);
+  return [];
+}
+
+function glzSetCrewListForJsa(list){
+  const names=(list||[]).map(x=>String(x||"").trim()).filter(Boolean);
+  const txt=document.getElementById("glzJsaCrewText");
+  if(txt)txt.value=names.join(", ");
+  const sel=document.getElementById("glzJsaCrewSelect");
+  if(sel){
+    [...sel.options].forEach(o=>{
+      o.selected=names.some(n=>n.toLowerCase()===o.value.toLowerCase());
+    });
+  }
+}
+
+function glzCurrentJsaJobsite(){
+  return (document.getElementById("glzJsaJobsite")?.value||document.getElementById("defaultJobsite")?.value||"").trim();
+}
+
+function glzAutoFillCrewForJobsite(){
+  const job=glzCurrentJsaJobsite();
+  if(!job)return;
+  state.crewByJobsite=state.crewByJobsite||{};
+  const saved=state.crewByJobsite[job]||[];
+  if(saved.length){
+    glzSetCrewListForJsa(saved);
+  }
+}
+
+function glzSaveCrewForCurrentJobsite(){
+  const job=glzCurrentJsaJobsite();
+  if(!job)return;
+  const crew=glzGetSelectedCrewList();
+  if(!crew.length)return;
+  state.crewByJobsite=state.crewByJobsite||{};
+  state.crewByJobsite[job]=[...new Set(crew)].sort((a,b)=>a.localeCompare(b));
+  persist();
+}
+
+function removeSelectedWorkers(){
+  const select=document.getElementById("glzJsaCrewSelect");
+  if(!select)return alert("Open the Quick JSA form first.");
+  const selected=[...select.selectedOptions].map(o=>o.value);
+  if(!selected.length)return alert("Select at least one worker to remove.");
+  if(!confirm("Remove selected worker(s) from saved list and this jobsite crew?"))return;
+
+  state.workers=(state.workers||[]).filter(w=>{
+    const name=String(w.name||w);
+    return !selected.includes(name);
+  });
+
+  state.crewByJobsite=state.crewByJobsite||{};
+  Object.keys(state.crewByJobsite).forEach(job=>{
+    state.crewByJobsite[job]=(state.crewByJobsite[job]||[]).filter(name=>!selected.includes(name));
+  });
+
+  persist();
+  if(typeof glzRenderStandaloneJsaFinal==="function")glzRenderStandaloneJsaFinal();
+}
+
+const glzOldRenderStandaloneForCrew=typeof glzRenderStandaloneJsaFinal==="function"?glzRenderStandaloneJsaFinal:null;
+if(glzOldRenderStandaloneForCrew){
+  glzRenderStandaloneJsaFinal=function(){
+    glzOldRenderStandaloneForCrew();
+
+    const job=document.getElementById("glzJsaJobsite");
+    if(job && !job.dataset.crewAutoBound){
+      job.dataset.crewAutoBound="1";
+      const oldChange=job.onchange;
+      job.onchange=function(e){
+        if(oldChange)oldChange.call(job,e);
+        glzAutoFillCrewForJobsite();
+      };
+    }
+
+    const crew=document.getElementById("glzJsaCrewSelect");
+    if(crew && !crew.dataset.crewSaveBound){
+      crew.dataset.crewSaveBound="1";
+      const oldCrewChange=crew.onchange;
+      crew.onchange=function(e){
+        if(oldCrewChange)oldCrewChange.call(crew,e);
+        glzSaveCrewForCurrentJobsite();
+      };
+    }
+
+    const remove=document.getElementById("glzJsaRemoveWorker");
+    if(remove){
+      remove.onclick=function(e){
         if(e)e.preventDefault();
-        activeFormId="jha";
-        try{renderForms()}catch(err){}
-        try{renderFields()}catch(err){}
-        glzRenderStandaloneJsaFinal();
+        removeSelectedWorkers();
         return false;
       };
     }
-  });
-}
 
-const glzPriorRenderFinal = typeof render==="function" ? render : null;
-if(glzPriorRenderFinal){
-  render=function(){
-    glzPriorRenderFinal();
-    glzRenderStandaloneJsaFinal();
-    glzPatchQuickJsaFormButtonsFinal();
+    const txt=document.getElementById("glzJsaCrewText");
+    if(txt && !txt.dataset.crewTextSaveBound){
+      txt.dataset.crewTextSaveBound="1";
+      txt.addEventListener("change",glzSaveCrewForCurrentJobsite);
+      txt.addEventListener("blur",glzSaveCrewForCurrentJobsite);
+    }
   };
 }
 
-const glzPriorRenderFormsFinal = typeof renderForms==="function" ? renderForms : null;
-if(glzPriorRenderFormsFinal){
-  renderForms=function(){
-    glzPriorRenderFormsFinal();
-    setTimeout(glzPatchQuickJsaFormButtonsFinal,0);
-    setTimeout(glzRenderStandaloneJsaFinal,0);
-  };
+const glzOldSaveJsaWorkers=typeof saveJsaWorkersFromStatic==="function"?saveJsaWorkersFromStatic:null;
+function saveJsaWorkersFromStatic(){
+  if(glzOldSaveJsaWorkers)glzOldSaveJsaWorkers();
+  glzSaveCrewForCurrentJobsite();
 }
 
 document.addEventListener("DOMContentLoaded",function(){
-  glzPatchQuickJsaFormButtonsFinal();
-  glzRenderStandaloneJsaFinal();
+  setTimeout(function(){
+    if(typeof glzRenderStandaloneJsaFinal==="function")glzRenderStandaloneJsaFinal();
+  },300);
 });
-setTimeout(glzPatchQuickJsaFormButtonsFinal,200);
-setTimeout(glzRenderStandaloneJsaFinal,200);
-setTimeout(glzPatchQuickJsaFormButtonsFinal,1000);
-setTimeout(glzRenderStandaloneJsaFinal,1000);
-/* GLZ_FORCE_VISIBLE_JSA_FIELDS_FINAL_END */
+/* GLZ_CREW_BY_JOBSITE_AUTOFILL_END */
 
 </script><!-- JSA_FIELDS_ENABLED_VERIFIED -->
 </body></html>
